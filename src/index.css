@@ -1,0 +1,27 @@
+.page-cont {
+    text-align: center;
+}
+
+.send-btn {
+    padding-left: 10px;
+}
+
+.user-msgbox {
+    position: fixed;
+    padding: 10px 30px 10px 30px;
+    bottom: 0;
+    height: auto;
+    padding-bottom: 10px;
+    width: 100%;
+    z-index: 1000;
+}
+
+.send-msg-cont {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.chat-msg {
+    margin-bottom: 10px;
+}
