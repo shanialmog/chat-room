@@ -1,8 +1,18 @@
+body {
+    width: 100%;
+}
 .page-cont {
     text-align: center;
     height: 100vh;
     display: flex;
     flex-direction: column;
+    max-width: 50%;
+    margin: auto;
+    align-content: center;
+}
+
+.header {
+    height: 40px;
 }
 
 .send-btn {
@@ -17,6 +27,7 @@
     padding-bottom: 10px;
     width: 100%;
     z-index: 1000;
+    max-width: 50%;
 }
 
 .user-msg {
@@ -27,7 +38,7 @@
 }
 
 .chat-msg-cont {
-    height: 78%;
+    height: calc(100vh - (80px + 90px));
     padding: 30px;
     overflow-y: scroll;
 }
