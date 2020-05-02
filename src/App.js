@@ -32,7 +32,9 @@ function App() {
     <div className="page-cont">
       <CssBaseline />
       <h1>Chat room</h1>
-      <div>
+      <div 
+        className="chat-msg-cont"
+      >
         {response.map((res) => {
           return (
             <div
@@ -53,12 +55,12 @@ function App() {
         })}
       </div>
       <div className="user-msgbox">
-        <div className="send-msg-cont">
+        <div className="user-msg">
           <TextField
             label="Shani"
             value={message}
-            multiline
-            rowsMax={4}
+            // multiline
+            rowsMax={2}
             placeholder="Text here"
             variant="outlined"
             fullWidth
