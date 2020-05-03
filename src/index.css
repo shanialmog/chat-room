@@ -1,6 +1,28 @@
 body {
     width: 100%;
 }
+
+.modal {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-fade {
+    background-color: #ffff;
+    border: 2px solid #fff;
+    padding: 40px;
+    text-align: center;
+}
+
+.modal-input {
+    display: flex;
+    /* justify-content: center; */
+    align-items: center;
+    padding: 20px 20px;
+}
+
 .page-cont {
     text-align: center;
     height: 100vh;
