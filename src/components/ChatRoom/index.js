@@ -40,6 +40,7 @@ const ChatRoom = (props) => {
         const t = Date.now()
         const time = Math.floor(t / 1000)
         setResponse((prevstate) => { return ([...prevstate, { "message": message, "user": username, "timestamp": time }]) })
+        setMessage("")
     }
     
     
