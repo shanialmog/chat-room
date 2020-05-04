@@ -13,6 +13,9 @@ import ChatRoom from './components/ChatRoom'
 
 const App = () => {
     const [open, setOpen] = React.useState(true)
+    const [tempUsername, setTempUsername] = useState("")
+    const [username, setUsername] = useState("")
+    const isValidUsername = tempUsername.length > 0
 
     const handleOpen = () => {
         setOpen(true)
@@ -20,6 +23,17 @@ const App = () => {
 
     const handleClose = () => {
         setOpen(false)
+        setUsername(tempUsername)
+    }
+
+    const handleChange = (event) => {
+        setTempUsername(event.target.value)
+    }
+
+    const handleKeyDown = (event) => {
+        if (event.key === 'Enter') {
+            handleClose()
+        }
     }
 
     return (
@@ -27,7 +41,7 @@ const App = () => {
             <CssBaseline />
             <Modal
                 className="modal"
-                open={handleOpen}
+                open={open}
                 onClose={handleClose}
                 closeAfterTransition
                 BackdropComponent={Backdrop}
@@ -35,7 +49,7 @@ const App = () => {
                     timeout: 500,
                 }}
             >
-                <Fade in={true}>
+                <Fade in={open}>
                     <div
                         className="modal-fade"
                     >
@@ -46,13 +60,17 @@ const App = () => {
                                 // defaultValue="Select username"
                                 // helperText="Some important text"
                                 variant="outlined"
+                                onChange={handleChange}
+                                onKeyDown={handleKeyDown}
                             />
                             <div>
                                 <IconButton
-                                    type="submit"
-                                    // onClick={}
+                                    type="button"
+                                    onClick={handleClose}
                                     edge="end"
                                     color="primary"
+                                    disabled={!isValidUsername}
+                                    value={tempUsername}
                                 >
                                     <SendRoundedIcon />
                                 </IconButton>
@@ -61,7 +79,7 @@ const App = () => {
                     </div>
                 </Fade>
             </Modal>
-            <ChatRoom />
+            <ChatRoom username={username} />
         </div>
     )
 }

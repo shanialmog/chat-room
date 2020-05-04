@@ -37,16 +37,11 @@ body {
     height: 40px;
 }
 
-.send-btn {
-    padding-left: 10px;
-}
-
 .user-msgbox {
     position: fixed;
-    padding: 10px 30px 10px 30px;
+    padding: 10px 20px 10px 30px;
     bottom: 0;
     height: auto;
-    padding-bottom: 10px;
     width: 100%;
     z-index: 1000;
     max-width: 50%;
