@@ -35,6 +35,7 @@ const App = () => {
             handleClose()
         }
     }
+    console.log(open)
 
     return (
         <div>
@@ -45,9 +46,8 @@ const App = () => {
                 onClose={handleClose}
                 closeAfterTransition
                 BackdropComponent={Backdrop}
-                BackdropProps={{
-                    timeout: 500,
-                }}
+                disableBackdropClick
+                disableEscapeKeyDown
             >
                 <Fade in={open}>
                     <div
