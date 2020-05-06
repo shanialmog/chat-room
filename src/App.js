@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState } from 'react'
 
 import IconButton from '@material-ui/core/IconButton'
 import SendRoundedIcon from '@material-ui/icons/SendRounded'
@@ -12,7 +12,7 @@ import ChatRoom from './components/ChatRoom'
 
 
 const App = () => {
-    const [open, setOpen] = React.useState(true)
+    const [open, setOpen] = useState(true)
     const [tempUsername, setTempUsername] = useState("")
     const [username, setUsername] = useState("")
     const isValidUsername = tempUsername.length > 0
@@ -31,7 +31,9 @@ const App = () => {
     }
 
     const handleKeyDown = (event) => {
+        console.log(event.key)
         if (event.key === 'Enter') {
+            event.preventDefault()
             handleClose()
         }
     }
@@ -43,7 +45,7 @@ const App = () => {
             <Modal
                 className="modal"
                 open={open}
-                onClose={handleClose}
+                // onClose={handleClose}
                 closeAfterTransition
                 BackdropComponent={Backdrop}
                 disableBackdropClick
@@ -62,6 +64,7 @@ const App = () => {
                                 variant="outlined"
                                 onChange={handleChange}
                                 onKeyDown={handleKeyDown}
+                                value={tempUsername}
                             />
                             <div>
                                 <IconButton
@@ -70,7 +73,6 @@ const App = () => {
                                     edge="end"
                                     color="primary"
                                     disabled={!isValidUsername}
-                                    value={tempUsername}
                                 >
                                     <SendRoundedIcon />
                                 </IconButton>
@@ -79,7 +81,11 @@ const App = () => {
                     </div>
                 </Fade>
             </Modal>
-            <ChatRoom username={username} />
+            <ChatRoom username={username} setopen={()=>{
+                if (!open) {
+                    setOpen(true)
+                }
+            }} />
         </div>
     )
 }

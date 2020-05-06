@@ -4,6 +4,7 @@ import TextField from '@material-ui/core/TextField'
 import CssBaseline from '@material-ui/core/CssBaseline'
 import IconButton from '@material-ui/core/IconButton'
 import SendRoundedIcon from '@material-ui/icons/SendRounded'
+import Button from '@material-ui/core/Button'
 import moment from 'moment'
 
 const ChatRoom = (props) => {
@@ -24,9 +25,9 @@ const ChatRoom = (props) => {
     useEffect(() => {
         setUsername(props.username);
     }, [props])
-    
+
     const messagesEndRef = useRef(null)
-    
+
     useEffect(() => {
         messagesEndRef.current.scrollIntoView({ behavior: "smooth" })
     }, [response]);
@@ -34,7 +35,7 @@ const ChatRoom = (props) => {
     const handleChange = (event) => {
         setMessage(event.target.value)
     }
-    
+
     const sendMsg = (event) => {
         socket.emit("msg", { "message": message, "user": username })
         const t = Date.now()
@@ -42,20 +43,27 @@ const ChatRoom = (props) => {
         setResponse((prevstate) => { return ([...prevstate, { "message": message, "user": username, "timestamp": time }]) })
         setMessage("")
     }
-    
-    
+
+
     const handleKeyDown = (event) => {
         if (event.key === 'Enter') {
             sendMsg()
         }
     }
-    
+
     return (
         <div className="page-cont">
             <CssBaseline />
-            <h1
-                className="header"
-            >Chat room</h1>
+            <div className="header">
+                <h1>Chat room</h1>
+                <div>
+                    <Button
+                        onClick={() => props.setopen()}
+                    >
+                        {username}
+                    </Button>
+                </div>
+            </div>
             <div
                 className="chat-msg-cont"
             >
