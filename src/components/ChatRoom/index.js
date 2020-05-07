@@ -13,6 +13,8 @@ const ChatRoom = (props) => {
     const [socket, setSocket] = useState(null)
     const [username, setUsername] = useState(props.username)
 
+    const isValidMessage = message.length > 0
+
 
     useEffect(() => {
         const openSocket = io.connect()
@@ -107,6 +109,7 @@ const ChatRoom = (props) => {
                             onClick={sendMsg}
                             edge="end"
                             color="primary"
+                            disabled={!isValidMessage}
                         >
                             <SendRoundedIcon />
                         </IconButton>
