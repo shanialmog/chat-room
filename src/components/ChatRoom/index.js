@@ -13,16 +13,22 @@ const ChatRoom = (props) => {
     const [socket, setSocket] = useState(null)
     const [username, setUsername] = useState(props.username)
 
-    const isValidMessage = message.length > 0
+    const isValidMessage = message.length > 0 && socket
 
 
     useEffect(() => {
+        console.log("ddd",response)
         const openSocket = io.connect()
+        console.log(openSocket)
         openSocket.on("msg", data => {
-            setResponse((prevstate) => { return ([...prevstate, data]) });
+            setResponse((prevstate) => { return ([...prevstate, data]) })
             setSocket(openSocket)
         });
+        console.log("ddd",response)
+        console.log("dd",socket)
     }, []);
+
+    console.log(socket)
 
     useEffect(() => {
         setUsername(props.username);
@@ -39,7 +45,7 @@ const ChatRoom = (props) => {
     }
 
     const sendMsg = (event) => {
-        socket.emit("msg", { "message": message, "user": username })
+        socket.emit("msg", { "message": message})
         const t = Date.now()
         const time = Math.floor(t / 1000)
         setResponse((prevstate) => { return ([...prevstate, { "message": message, "user": username, "timestamp": time }]) })

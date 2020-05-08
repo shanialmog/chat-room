@@ -31,13 +31,12 @@ const App = () => {
     }
 
     const handleKeyDown = (event) => {
-        console.log(event.key)
         if (event.key === 'Enter') {
             event.preventDefault()
             handleClose()
         }
     }
-    console.log(open)
+    // console.log(open)
 
     return (
         <div>
