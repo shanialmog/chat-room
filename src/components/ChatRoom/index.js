@@ -1,38 +1,36 @@
 import React, { useState, useEffect, useRef } from 'react'
 import io from 'socket.io-client'
+
+import UserName from '../UserName'
+
 import TextField from '@material-ui/core/TextField'
-import CssBaseline from '@material-ui/core/CssBaseline'
 import IconButton from '@material-ui/core/IconButton'
 import SendRoundedIcon from '@material-ui/icons/SendRounded'
 import Button from '@material-ui/core/Button'
 import moment from 'moment'
 
-const ChatRoom = (props) => {
+const ChatRoom = () => {
+    const [username, setUsername] = useState(null)
+    const [openModal, setOpenModal] = useState(true)
     const [message, setMessage] = useState("")
     const [response, setResponse] = useState([])
     const [socket, setSocket] = useState(null)
-    const [username, setUsername] = useState(props.username)
 
     const isValidMessage = message.length > 0 && socket
 
-
     useEffect(() => {
-        console.log("ddd",response)
         const openSocket = io.connect()
-        console.log(openSocket)
         openSocket.on("msg", data => {
             setResponse((prevstate) => { return ([...prevstate, data]) })
             setSocket(openSocket)
-        });
-        console.log("ddd",response)
-        console.log("dd",socket)
+        })
     }, []);
 
-    console.log(socket)
-
-    useEffect(() => {
-        setUsername(props.username);
-    }, [props])
+    const setName = (username) => {
+        setOpenModal(false)
+        socket.emit("set_name", { "name": username })
+        setUsername(username)
+    }
 
     const messagesEndRef = useRef(null)
 
@@ -45,13 +43,12 @@ const ChatRoom = (props) => {
     }
 
     const sendMsg = (event) => {
-        socket.emit("msg", { "message": message})
+        socket.emit("msg", { "message": message })
         const t = Date.now()
         const time = Math.floor(t / 1000)
-        setResponse((prevstate) => { return ([...prevstate, { "message": message, "user": username, "timestamp": time }]) })
+        setResponse((prevstate) => { return ([...prevstate, { "message": message, "name": username, "timestamp": time }]) })
         setMessage("")
     }
-
 
     const handleKeyDown = (event) => {
         if (event.key === 'Enter') {
@@ -61,15 +58,20 @@ const ChatRoom = (props) => {
 
     return (
         <div className="page-cont">
-            <CssBaseline />
+            <UserName
+                setName={setName}
+                openModal={openModal}
+            />
             <div className="header">
                 <h1>Chat room</h1>
                 <div>
-                    <Button
-                        onClick={() => props.setopen()}
-                    >
-                        {username}
-                    </Button>
+                    {username &&
+                        <Button
+                            onClick={() => setOpenModal(true)}
+                        >
+                            {username}
+                        </Button>
+                    }
                 </div>
             </div>
             <div
@@ -83,7 +85,7 @@ const ChatRoom = (props) => {
                             key={res.timestamp + res.message}
                         >
                             <TextField
-                                label={`${res.user} ${t.fromNow()}`}
+                                label={`${res.name} ${t.fromNow()}`}
                                 value={res.message}
                                 multiline
                                 rowsMax={4}
@@ -101,7 +103,6 @@ const ChatRoom = (props) => {
                     <TextField
                         label={username}
                         value={message}
-                        // multiline
                         rowsMax={2}
                         placeholder="Text here"
                         variant="outlined"
@@ -110,15 +111,17 @@ const ChatRoom = (props) => {
                         onKeyDown={handleKeyDown}
                     />
                     <div>
-                        <IconButton
-                            type="submit"
-                            onClick={sendMsg}
-                            edge="end"
-                            color="primary"
-                            disabled={!isValidMessage}
-                        >
-                            <SendRoundedIcon />
-                        </IconButton>
+                        {socket &&
+                            <IconButton
+                                type="submit"
+                                onClick={sendMsg}
+                                edge="end"
+                                color="primary"
+                                disabled={!isValidMessage}
+                            >
+                                <SendRoundedIcon />
+                            </IconButton>
+                        }
                     </div>
                 </div>
             </div>
