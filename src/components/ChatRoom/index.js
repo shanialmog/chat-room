@@ -22,8 +22,11 @@ const ChatRoom = () => {
         const openSocket = io.connect()
         openSocket.on("msg", data => {
             setResponse((prevstate) => { return ([...prevstate, data]) })
-            setSocket(openSocket)
         })
+        setSocket(openSocket)
+        return () => {
+            openSocket.close()
+        }
     }, []);
 
     const setName = (username) => {
@@ -58,10 +61,12 @@ const ChatRoom = () => {
 
     return (
         <div className="page-cont">
-            <UserName
-                setName={setName}
-                openModal={openModal}
-            />
+            {socket &&
+                <UserName
+                    setName={setName}
+                    openModal={openModal}
+                />
+            }
             <div className="header">
                 <h1>Chat room</h1>
                 <div>
@@ -111,17 +116,17 @@ const ChatRoom = () => {
                         onKeyDown={handleKeyDown}
                     />
                     <div>
-                        {socket &&
-                            <IconButton
-                                type="submit"
-                                onClick={sendMsg}
-                                edge="end"
-                                color="primary"
-                                disabled={!isValidMessage}
-                            >
-                                <SendRoundedIcon />
-                            </IconButton>
-                        }
+                        {/* {socket && */}
+                        <IconButton
+                            type="submit"
+                            onClick={sendMsg}
+                            edge="end"
+                            color="primary"
+                            disabled={!isValidMessage}
+                        >
+                            <SendRoundedIcon />
+                        </IconButton>
+                        {/* } */}
                     </div>
                 </div>
             </div>
