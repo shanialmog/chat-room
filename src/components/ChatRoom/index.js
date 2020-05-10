@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import io from 'socket.io-client'
 
 import UserName from '../UserName'
+import UserMessage from '../timeline/UserMessage/'
 
 import TextField from '@material-ui/core/TextField'
 import IconButton from '@material-ui/core/IconButton'
@@ -13,7 +14,9 @@ const ChatRoom = () => {
     const [username, setUsername] = useState(null)
     const [openModal, setOpenModal] = useState(true)
     const [message, setMessage] = useState("")
-    const [response, setResponse] = useState([])
+    const [timeline, setTimeline] = useState([])
+    // const [userJoined, setUserJoined] = useState({})
+    // const [userLeft, setUserLeft] = useState({})
     const [socket, setSocket] = useState(null)
 
     const isValidMessage = message.length > 0 && socket
@@ -21,13 +24,23 @@ const ChatRoom = () => {
     useEffect(() => {
         const openSocket = io.connect()
         openSocket.on("msg", data => {
-            setResponse((prevstate) => { return ([...prevstate, data]) })
+            setTimeline((prevstate) => { return ([...prevstate, { "type": "users_message", data }]) })
+        })
+        openSocket.on("join", data => {
+            setTimeline((prevstate) => { return [...prevstate, { "type": "user_joined", data }] })
+            console.log("join data", data)
+        })
+        openSocket.on("left", data => {
+            setTimeline((prevstate) => { return [...prevstate, { "type": "user_left", data }] })
+            console.log("left data", data)
         })
         setSocket(openSocket)
         return () => {
             openSocket.close()
         }
     }, []);
+    // console.log("join", userJoined)
+    // console.log("left", userLeft)
 
     const setName = (username) => {
         setOpenModal(false)
@@ -39,7 +52,7 @@ const ChatRoom = () => {
 
     useEffect(() => {
         messagesEndRef.current.scrollIntoView({ behavior: "smooth" })
-    }, [response]);
+    }, [timeline]);
 
     const handleChange = (event) => {
         setMessage(event.target.value)
@@ -49,7 +62,7 @@ const ChatRoom = () => {
         socket.emit("msg", { "message": message })
         const t = Date.now()
         const time = Math.floor(t / 1000)
-        setResponse((prevstate) => { return ([...prevstate, { "message": message, "name": username, "timestamp": time }]) })
+        setTimeline((prevstate) => { return ([...prevstate, { "message": message, "name": username, "timestamp": time }]) })
         setMessage("")
     }
 
@@ -58,6 +71,8 @@ const ChatRoom = () => {
             sendMsg()
         }
     }
+
+    console.log(timeline)
 
     return (
         <div className="page-cont">
@@ -82,25 +97,35 @@ const ChatRoom = () => {
             <div
                 className="chat-msg-cont"
             >
-                {response.map((res) => {
-                    const t = moment.unix(res.timestamp)
-                    return (
-                        <div
-                            className="chat-msg"
-                            key={res.timestamp + res.message}
-                        >
-                            <TextField
-                                label={`${res.name} ${t.fromNow()}`}
-                                value={res.message}
-                                multiline
-                                rowsMax={4}
-                                placeholder="Text here"
-                                variant="outlined"
-                                fullWidth
-                            />
-                        </div>
-                    )
-                })}
+                {
+                    timeline.map((res, i) => {
+                        return (
+                            <div
+                                className="chat-msg"
+                            key={i}
+                            >
+                                {
+                                    res.type === "users_message" && 
+                                    <UserMessage 
+                                        {...res.data}
+                                    />
+                                }
+                                {/* {
+                                    res.user_joined &&
+                                    <div style={{ color: "#a3a3a3" }}>A user has joined</div>
+                                }
+                                {
+                                    res.user_left &&
+                                        userLeft.name
+                                        ?
+                                        <div style={{ color: "#a3a3a3" }}>{`${res[user_left][name]}has left`}</div>
+                                        :
+                                        <div style={{ color: "#a3a3a3" }}>A user has left</div>
+                                } */}
+                            </div>
+                        )
+                    })
+                }
                 <div ref={messagesEndRef}></div>
             </div>
             <div className="user-msgbox">
