@@ -2,18 +2,20 @@ import React, { useState, useEffect, useRef } from 'react'
 import io from 'socket.io-client'
 
 import UserName from '../UserName'
+import UserMessage from '../timeline/UserMessage/'
 
 import TextField from '@material-ui/core/TextField'
 import IconButton from '@material-ui/core/IconButton'
 import SendRoundedIcon from '@material-ui/icons/SendRounded'
 import Button from '@material-ui/core/Button'
 import moment from 'moment'
+import Notifications from '../timeline/Notifications'
 
 const ChatRoom = () => {
     const [username, setUsername] = useState(null)
     const [openModal, setOpenModal] = useState(true)
     const [message, setMessage] = useState("")
-    const [response, setResponse] = useState([])
+    const [timeline, setTimeline] = useState([])
     const [socket, setSocket] = useState(null)
 
     const isValidMessage = message.length > 0 && socket
@@ -21,7 +23,13 @@ const ChatRoom = () => {
     useEffect(() => {
         const openSocket = io.connect()
         openSocket.on("msg", data => {
-            setResponse((prevstate) => { return ([...prevstate, data]) })
+            setTimeline((prevstate) => { return ([...prevstate, { "type": "users_message", data }]) })
+        })
+        openSocket.on("join", data => {
+            setTimeline((prevstate) => { return [...prevstate, { "type": "user_joined", data }] })
+        })
+        openSocket.on("left", data => {
+            setTimeline((prevstate) => { return [...prevstate, { "type": "user_left", data }] })
         })
         setSocket(openSocket)
         return () => {
@@ -39,7 +47,7 @@ const ChatRoom = () => {
 
     useEffect(() => {
         messagesEndRef.current.scrollIntoView({ behavior: "smooth" })
-    }, [response]);
+    }, [timeline]);
 
     const handleChange = (event) => {
         setMessage(event.target.value)
@@ -49,7 +57,11 @@ const ChatRoom = () => {
         socket.emit("msg", { "message": message })
         const t = Date.now()
         const time = Math.floor(t / 1000)
-        setResponse((prevstate) => { return ([...prevstate, { "message": message, "name": username, "timestamp": time }]) })
+        setTimeline((prevstate) => {
+            return ([...prevstate, {
+                "type": "users_message", data : {"message": message, "name": username, "timestamp": time}
+            }])
+        })
         setMessage("")
     }
 
@@ -82,25 +94,37 @@ const ChatRoom = () => {
             <div
                 className="chat-msg-cont"
             >
-                {response.map((res) => {
-                    const t = moment.unix(res.timestamp)
-                    return (
-                        <div
-                            className="chat-msg"
-                            key={res.timestamp + res.message}
-                        >
-                            <TextField
-                                label={`${res.name} ${t.fromNow()}`}
-                                value={res.message}
-                                multiline
-                                rowsMax={4}
-                                placeholder="Text here"
-                                variant="outlined"
-                                fullWidth
-                            />
-                        </div>
-                    )
-                })}
+                {
+                    timeline.map((res, i) => {
+                        return (
+                            <div
+                                className="chat-msg"
+                                key={i}
+                            >
+                                {
+                                    res.type === "users_message" &&
+                                    <UserMessage
+                                        {...res.data}
+                                    />
+                                }
+                                {
+                                    res.type === "user_joined" &&
+                                    <Notifications
+                                        {...res.data}
+                                        type="joined"
+                                    />
+                                }
+                                {
+                                    res.type === "user_left" &&
+                                    <Notifications
+                                        {...res.data}
+                                        type="left"
+                                    />
+                                }
+                            </div>
+                        )
+                    })
+                }
                 <div ref={messagesEndRef}></div>
             </div>
             <div className="user-msgbox">
