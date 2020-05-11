@@ -9,14 +9,13 @@ import IconButton from '@material-ui/core/IconButton'
 import SendRoundedIcon from '@material-ui/icons/SendRounded'
 import Button from '@material-ui/core/Button'
 import moment from 'moment'
+import Notifications from '../timeline/Notifications'
 
 const ChatRoom = () => {
     const [username, setUsername] = useState(null)
     const [openModal, setOpenModal] = useState(true)
     const [message, setMessage] = useState("")
     const [timeline, setTimeline] = useState([])
-    // const [userJoined, setUserJoined] = useState({})
-    // const [userLeft, setUserLeft] = useState({})
     const [socket, setSocket] = useState(null)
 
     const isValidMessage = message.length > 0 && socket
@@ -28,19 +27,15 @@ const ChatRoom = () => {
         })
         openSocket.on("join", data => {
             setTimeline((prevstate) => { return [...prevstate, { "type": "user_joined", data }] })
-            console.log("join data", data)
         })
         openSocket.on("left", data => {
             setTimeline((prevstate) => { return [...prevstate, { "type": "user_left", data }] })
-            console.log("left data", data)
         })
         setSocket(openSocket)
         return () => {
             openSocket.close()
         }
     }, []);
-    // console.log("join", userJoined)
-    // console.log("left", userLeft)
 
     const setName = (username) => {
         setOpenModal(false)
@@ -62,7 +57,11 @@ const ChatRoom = () => {
         socket.emit("msg", { "message": message })
         const t = Date.now()
         const time = Math.floor(t / 1000)
-        setTimeline((prevstate) => { return ([...prevstate, { "message": message, "name": username, "timestamp": time }]) })
+        setTimeline((prevstate) => {
+            return ([...prevstate, {
+                "type": "users_message", data : {"message": message, "name": username, "timestamp": time}
+            }])
+        })
         setMessage("")
     }
 
@@ -71,8 +70,6 @@ const ChatRoom = () => {
             sendMsg()
         }
     }
-
-    console.log(timeline)
 
     return (
         <div className="page-cont">
@@ -102,26 +99,28 @@ const ChatRoom = () => {
                         return (
                             <div
                                 className="chat-msg"
-                            key={i}
+                                key={i}
                             >
                                 {
-                                    res.type === "users_message" && 
-                                    <UserMessage 
+                                    res.type === "users_message" &&
+                                    <UserMessage
                                         {...res.data}
                                     />
                                 }
-                                {/* {
-                                    res.user_joined &&
-                                    <div style={{ color: "#a3a3a3" }}>A user has joined</div>
+                                {
+                                    res.type === "user_joined" &&
+                                    <Notifications
+                                        {...res.data}
+                                        type="joined"
+                                    />
                                 }
                                 {
-                                    res.user_left &&
-                                        userLeft.name
-                                        ?
-                                        <div style={{ color: "#a3a3a3" }}>{`${res[user_left][name]}has left`}</div>
-                                        :
-                                        <div style={{ color: "#a3a3a3" }}>A user has left</div>
-                                } */}
+                                    res.type === "user_left" &&
+                                    <Notifications
+                                        {...res.data}
+                                        type="left"
+                                    />
+                                }
                             </div>
                         )
                     })
