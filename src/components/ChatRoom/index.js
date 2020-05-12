@@ -8,7 +8,6 @@ import TextField from '@material-ui/core/TextField'
 import IconButton from '@material-ui/core/IconButton'
 import SendRoundedIcon from '@material-ui/icons/SendRounded'
 import Button from '@material-ui/core/Button'
-import moment from 'moment'
 import Notifications from '../timeline/Notifications'
 
 const ChatRoom = () => {
@@ -17,6 +16,7 @@ const ChatRoom = () => {
     const [message, setMessage] = useState("")
     const [timeline, setTimeline] = useState([])
     const [socket, setSocket] = useState(null)
+    const [userIsTyping, setUserIsTyping] = useState([])
 
     const isValidMessage = message.length > 0 && socket
 
@@ -31,11 +31,26 @@ const ChatRoom = () => {
         openSocket.on("left", data => {
             setTimeline((prevstate) => { return [...prevstate, { "type": "user_left", data }] })
         })
+        openSocket.on("typing", data => {
+            // console.log("typing", data)
+            currentlyTyping(data)
+            // setUserIsTyping((prevstate) => { return [...prevstate, data.name] })
+        })
         setSocket(openSocket)
         return () => {
             openSocket.close()
         }
     }, []);
+
+    const currentlyTyping = (data) => {
+        // console.log("data",data,data.name)
+        const userTyping = data.name
+        userIsTyping.map(user => {
+            if (user !== userTyping) {
+                setUserIsTyping(prevstate => { return [...prevstate, userTyping] })
+            }
+        })
+    }
 
     const setName = (username) => {
         setOpenModal(false)
@@ -51,6 +66,7 @@ const ChatRoom = () => {
 
     const handleChange = (event) => {
         setMessage(event.target.value)
+        socket.emit("typing")
     }
 
     const sendMsg = (event) => {
@@ -59,7 +75,7 @@ const ChatRoom = () => {
         const time = Math.floor(t / 1000)
         setTimeline((prevstate) => {
             return ([...prevstate, {
-                "type": "users_message", data : {"message": message, "name": username, "timestamp": time}
+                "type": "users_message", data: { "message": message, "name": username, "timestamp": time }
             }])
         })
         setMessage("")
@@ -124,6 +140,11 @@ const ChatRoom = () => {
                             </div>
                         )
                     })
+                }
+                {
+                    userIsTyping &&
+                    console.log("userIsTyping", userIsTyping)
+                    // <div>{`${userIsTyping} typing`}</div>
                 }
                 <div ref={messagesEndRef}></div>
             </div>
