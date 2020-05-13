@@ -32,7 +32,6 @@ const ChatRoom = () => {
             setTimeline((prevstate) => { return [...prevstate, { "type": "user_left", data }] })
         })
         openSocket.on("typing", data => {
-            // console.log("typing", data)
             currentlyTyping(data)
             // setUserIsTyping((prevstate) => { return [...prevstate, data.name] })
         })
@@ -40,15 +39,18 @@ const ChatRoom = () => {
         return () => {
             openSocket.close()
         }
-    }, []);
+    }, [])
 
     const currentlyTyping = (data) => {
-        // console.log("data",data,data.name)
         const userTyping = data.name
-        userIsTyping.map(user => {
-            if (user !== userTyping) {
-                setUserIsTyping(prevstate => { return [...prevstate, userTyping] })
+        setUserIsTyping(prevstate => {
+            for (let name of prevstate) {
+                console.log("for name", name)
+                if (userTyping === name) {
+                    return [...prevstate]
+                }
             }
+            return [...prevstate, userTyping]
         })
     }
 
@@ -86,6 +88,8 @@ const ChatRoom = () => {
             sendMsg()
         }
     }
+
+    console.log("AA", userIsTyping, userIsTyping.length)
 
     return (
         <div className="page-cont">
@@ -140,11 +144,6 @@ const ChatRoom = () => {
                             </div>
                         )
                     })
-                }
-                {
-                    userIsTyping &&
-                    console.log("userIsTyping", userIsTyping)
-                    // <div>{`${userIsTyping} typing`}</div>
                 }
                 <div ref={messagesEndRef}></div>
             </div>
