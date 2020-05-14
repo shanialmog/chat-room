@@ -145,6 +145,14 @@ const ChatRoom = () => {
                         )
                     })
                 }
+                    {
+                        userIsTyping.length === 1 &&
+                        <div>{userIsTyping} is typing</div>
+                    }
+                    {
+                        userIsTyping.length > 1 &&
+                        <div>{userIsTyping.join()} are typing</div>
+                    }
                 <div ref={messagesEndRef}></div>
             </div>
             <div className="user-msgbox">
