@@ -67,7 +67,7 @@ h1 {
 }
 
 .chat-msg-cont {
-    height: calc(100vh - (80px + 90px));
+    height: calc(100vh - (80px + 110px));
     padding: 30px;
     overflow-y: scroll;
     width: 100%;

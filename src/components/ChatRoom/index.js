@@ -18,12 +18,25 @@ const ChatRoom = () => {
     const [socket, setSocket] = useState(null)
     const [userIsTyping, setUserIsTyping] = useState([])
 
-    const isValidMessage = message.length > 0 && socket
+    const isValidMessage = message.length > 0 && socket.length > 0
 
     useEffect(() => {
         const openSocket = io.connect()
         openSocket.on("msg", data => {
-            setTimeline((prevstate) => { return ([...prevstate, { "type": "users_message", data }]) })
+            setTimeline((prevstate) => {
+                return (
+                    [...prevstate, { "type": "users_message", data }]
+                )
+            })
+            deleteUserTyping(data)
+            // setUserIsTyping(prevstate => {
+            //     if (userIsTyping.length > 0) {
+            //         const typingUsers = userIsTyping.indexOf(data.name)
+            //         if (typingUsers > -1) {
+            //             return userIsTyping.splice(typingUsers, 1)
+            //         }
+            //     }
+            // })
         })
         openSocket.on("join", data => {
             setTimeline((prevstate) => { return [...prevstate, { "type": "user_joined", data }] })
@@ -41,11 +54,31 @@ const ChatRoom = () => {
         }
     }, [])
 
+    const deleteUserTyping = (data) => {
+        // console.log("outside data.name", data.name)
+        // console.log("userIsTyping", userIsTyping)
+        // if (userIsTyping.length >= 1) {
+        // console.log("helloooooooooo", data.name)
+        setUserIsTyping(prevstate => {
+            const deleteUser = prevstate.filter(user => data.name !== user)
+            return deleteUser
+            // const typingUsers = prevstate.indexOf(data.name)
+            // console.log("indexof", typingUsers)
+            // if (typingUsers > -1) {
+            //     const deleteUser = prevstate.split(',').spliced(typingUsers, 1).join(',')
+            //     console.log(deleteUser)
+            //     return [deleteUser]
+            // } else {
+            // }
+        }
+        )
+        // }
+    }
+
     const currentlyTyping = (data) => {
         const userTyping = data.name
         setUserIsTyping(prevstate => {
             for (let name of prevstate) {
-                console.log("for name", name)
                 if (userTyping === name) {
                     return [...prevstate]
                 }
@@ -73,6 +106,7 @@ const ChatRoom = () => {
 
     const sendMsg = (event) => {
         socket.emit("msg", { "message": message })
+        // console.log("message",message)
         const t = Date.now()
         const time = Math.floor(t / 1000)
         setTimeline((prevstate) => {
@@ -89,7 +123,9 @@ const ChatRoom = () => {
         }
     }
 
-    console.log("AA", userIsTyping, userIsTyping.length)
+
+    console.log("userIsTyping", userIsTyping, userIsTyping.length)
+    // console.log("timeline", timeline)
 
     return (
         <div className="page-cont">
@@ -145,14 +181,18 @@ const ChatRoom = () => {
                         )
                     })
                 }
-                    {
-                        userIsTyping.length === 1 &&
-                        <div>{userIsTyping} is typing</div>
-                    }
-                    {
-                        userIsTyping.length > 1 &&
-                        <div>{userIsTyping.join()} are typing</div>
-                    }
+                {
+                    userIsTyping.length === 1 &&
+                    <div>{userIsTyping} is typing...</div>
+                }
+                {
+                    userIsTyping.length === 2 &&
+                    <div>{userIsTyping.join()} are typing...</div>
+                }
+                {
+                    userIsTyping.length > 2 &&
+                    <div>{userIsTyping.length} users are typing...</div>
+                }
                 <div ref={messagesEndRef}></div>
             </div>
             <div className="user-msgbox">
@@ -168,7 +208,7 @@ const ChatRoom = () => {
                         onKeyDown={handleKeyDown}
                     />
                     <div>
-                        {/* {socket && */}
+                        {/* {socket.length > 0 && */}
                         <IconButton
                             type="submit"
                             onClick={sendMsg}
