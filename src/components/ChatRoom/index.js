@@ -51,21 +51,37 @@ const ChatRoom = () => {
 
     const deleteUserTyping = (data) => {
         setUserIsTyping(prevstate => {
-            const deleteUser = prevstate.filter(user => data.name !== user)
+            const deleteUser = prevstate.filter(user => data.name !== user.name)
             return deleteUser
         }
         )
     }
 
     const currentlyTyping = (data) => {
-        const userTyping = data.name
+        const userTypingName = data.name
+        const userTypingId = data.user_id
+        const currentTS = Date.now()
         setUserIsTyping(prevstate => {
-            for (let name of prevstate) {
-                if (userTyping === name) {
-                    return [...prevstate]
+            const lastTypingTS = Date.now()
+            // prevstate.map(
+            //     prevUserTyping => {
+            //         if (userTypingId === prevUserTyping.user_id) {
+            //             return { ...prevUserTyping, timestamp: lastTypingTS }
+            //         }
+            //     }
+            // )
+            for (let user in prevstate) {
+                if (userTypingId === prevstate[user].user_id) {
+                    const usersPrevstate = [...prevstate]
+                    //update timestamp
+                    usersPrevstate[user].timestamp = lastTypingTS
+                    return usersPrevstate
                 }
             }
-            return [...prevstate, userTyping]
+            console.log("before")
+            setTimeout(() => console.log("5 seconds later, usertyping:", userTypingName), 5000)
+            console.log({ userTypingName, userTypingId, lastTypingTS })
+            return [...prevstate, { name: userTypingName, user_id: userTypingId, timestamp: lastTypingTS }]
         })
     }
 
@@ -165,11 +181,11 @@ const ChatRoom = () => {
                 }
                 {
                     userIsTyping.length === 1 &&
-                    <div>{userIsTyping} is typing...</div>
+                    <div>{userIsTyping[0].name} is typing...</div>
                 }
                 {
                     userIsTyping.length === 2 &&
-                    <div>{userIsTyping.join()} are typing...</div>
+                    <div>{userIsTyping[0].name},{userIsTyping[1].name} are typing...</div>
                 }
                 {
                     userIsTyping.length > 2 &&
