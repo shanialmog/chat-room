@@ -18,7 +18,8 @@ const ChatRoom = () => {
     const [socket, setSocket] = useState(null)
     const [userIsTyping, setUserIsTyping] = useState([])
 
-    const isValidMessage = message.length > 0 && socket.length > 0
+    const isValidMessage = message.length > 0 && socket != null && socket.connected
+
     console.log("isValidMessage", isValidMessage)
 
     useEffect(() => {
@@ -49,24 +50,11 @@ const ChatRoom = () => {
     }, [])
 
     const deleteUserTyping = (data) => {
-        // console.log("outside data.name", data.name)
-        // console.log("userIsTyping", userIsTyping)
-        // if (userIsTyping.length >= 1) {
-        // console.log("helloooooooooo", data.name)
         setUserIsTyping(prevstate => {
             const deleteUser = prevstate.filter(user => data.name !== user)
             return deleteUser
-            // const typingUsers = prevstate.indexOf(data.name)
-            // console.log("indexof", typingUsers)
-            // if (typingUsers > -1) {
-            //     const deleteUser = prevstate.split(',').spliced(typingUsers, 1).join(',')
-            //     console.log(deleteUser)
-            //     return [deleteUser]
-            // } else {
-            // }
         }
         )
-        // }
     }
 
     const currentlyTyping = (data) => {
@@ -112,7 +100,7 @@ const ChatRoom = () => {
     }
 
     const handleKeyDown = (event) => {
-        if (event.key === 'Enter') {
+        if (event.key === 'Enter' && isValidMessage) {
             sendMsg()
         }
     }
@@ -202,7 +190,7 @@ const ChatRoom = () => {
                         onKeyDown={handleKeyDown}
                     />
                     <div>
-                        {/* {socket.length > 0 && */}
+                        {/* {socket && */}
                         <IconButton
                             type="submit"
                             onClick={sendMsg}
