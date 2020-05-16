@@ -19,6 +19,7 @@ const ChatRoom = () => {
     const [userIsTyping, setUserIsTyping] = useState([])
 
     const isValidMessage = message.length > 0 && socket.length > 0
+    console.log("isValidMessage", isValidMessage)
 
     useEffect(() => {
         const openSocket = io.connect()
@@ -29,20 +30,13 @@ const ChatRoom = () => {
                 )
             })
             deleteUserTyping(data)
-            // setUserIsTyping(prevstate => {
-            //     if (userIsTyping.length > 0) {
-            //         const typingUsers = userIsTyping.indexOf(data.name)
-            //         if (typingUsers > -1) {
-            //             return userIsTyping.splice(typingUsers, 1)
-            //         }
-            //     }
-            // })
         })
         openSocket.on("join", data => {
             setTimeline((prevstate) => { return [...prevstate, { "type": "user_joined", data }] })
         })
         openSocket.on("left", data => {
             setTimeline((prevstate) => { return [...prevstate, { "type": "user_left", data }] })
+            deleteUserTyping(data)
         })
         openSocket.on("typing", data => {
             currentlyTyping(data)
