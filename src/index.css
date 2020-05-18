@@ -78,3 +78,7 @@ h1 {
 .chat-msg {
     margin-bottom: 20px;
 }
+
+.typing-indicator {
+    color: #a3a3a3;
+}

@@ -58,6 +58,16 @@ const ChatRoom = () => {
         )
     }
 
+    // const checkUserTypingTS = (userTyping) => {
+    //     console.log("aaa")
+    //     // const checkUserTypingTS = 
+    //     setTimeout(() => {
+    //         console.log("bbb")
+    //         setUserIsTyping(prevstate => {
+    //         })
+    //     }, 5000)
+    // }
+
     const checkUserTypingTS = () => {
         console.log("aaa")
         // const checkUserTypingTS = 
@@ -190,15 +200,15 @@ const ChatRoom = () => {
                 }
                 {
                     userIsTyping.length === 1 &&
-                    <div>{userIsTyping[0].name} is typing...</div>
+                    <div className="typing-indicator">{userIsTyping[0].name} is typing...</div>
                 }
                 {
                     userIsTyping.length === 2 &&
-                    <div>{userIsTyping[0].name},{userIsTyping[1].name} are typing...</div>
+                    <div className="typing-indicator">{userIsTyping[0].name},{userIsTyping[1].name} are typing...</div>
                 }
                 {
                     userIsTyping.length > 2 &&
-                    <div>{userIsTyping.length} users are typing...</div>
+                    <div className="typing-indicator">{userIsTyping.length} users are typing...</div>
                 }
                 <div ref={messagesEndRef}></div>
             </div>
