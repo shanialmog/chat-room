@@ -41,6 +41,7 @@ const ChatRoom = () => {
         })
         openSocket.on("typing", data => {
             currentlyTyping(data)
+            // checkUserTypingTS()
             // setUserIsTyping((prevstate) => { return [...prevstate, data.name] })
         })
         setSocket(openSocket)
@@ -57,29 +58,37 @@ const ChatRoom = () => {
         )
     }
 
+    const checkUserTypingTS = () => {
+        console.log("aaa")
+        // const checkUserTypingTS = 
+        setTimeout(() => {
+            console.log("bbb")
+            setUserIsTyping(prevstate => {
+                const currentTS = Date.now()
+                const filterUserByTimestamp = prevstate.filter(user => {
+                    const diffTS = currentTS - user.timestamp
+                    console.log("diffTS", diffTS, "user.timestamp", user.timestamp, "currentTS", currentTS)
+                    return diffTS < 5000
+                })
+                console.log(filterUserByTimestamp)
+                return filterUserByTimestamp
+            })
+        }, 5000)
+    }
+
     const currentlyTyping = (data) => {
         const userTypingName = data.name
         const userTypingId = data.user_id
-        const currentTS = Date.now()
         setUserIsTyping(prevstate => {
+            checkUserTypingTS(data)
             const lastTypingTS = Date.now()
-            // prevstate.map(
-            //     prevUserTyping => {
-            //         if (userTypingId === prevUserTyping.user_id) {
-            //             return { ...prevUserTyping, timestamp: lastTypingTS }
-            //         }
-            //     }
-            // )
             for (let user in prevstate) {
                 if (userTypingId === prevstate[user].user_id) {
                     const usersPrevstate = [...prevstate]
-                    //update timestamp
                     usersPrevstate[user].timestamp = lastTypingTS
                     return usersPrevstate
                 }
             }
-            console.log("before")
-            setTimeout(() => console.log("5 seconds later, usertyping:", userTypingName), 5000)
             console.log({ userTypingName, userTypingId, lastTypingTS })
             return [...prevstate, { name: userTypingName, user_id: userTypingId, timestamp: lastTypingTS }]
         })
@@ -122,7 +131,7 @@ const ChatRoom = () => {
     }
 
 
-    console.log("userIsTyping", userIsTyping, userIsTyping.length)
+    // console.log("userIsTyping", userIsTyping, userIsTyping.length)
     // console.log("timeline", timeline)
 
     return (
