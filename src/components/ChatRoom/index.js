@@ -20,7 +20,6 @@ const ChatRoom = () => {
 
     const isValidMessage = message.length > 0 && socket != null && socket.connected
 
-    console.log("isValidMessage", isValidMessage)
 
     useEffect(() => {
         const openSocket = io.connect()
@@ -58,33 +57,41 @@ const ChatRoom = () => {
         )
     }
 
-    // const checkUserTypingTS = (userTyping) => {
-    //     console.log("aaa")
-    //     // const checkUserTypingTS = 
-    //     setTimeout(() => {
-    //         console.log("bbb")
-    //         setUserIsTyping(prevstate => {
-    //         })
-    //     }, 5000)
-    // }
-
-    const checkUserTypingTS = () => {
+    const checkUserTypingTS = (userTyping) => {
         console.log("aaa")
-        // const checkUserTypingTS = 
         setTimeout(() => {
             console.log("bbb")
             setUserIsTyping(prevstate => {
-                const currentTS = Date.now()
                 const filterUserByTimestamp = prevstate.filter(user => {
+                    const currentTS = Date.now()
                     const diffTS = currentTS - user.timestamp
                     console.log("diffTS", diffTS, "user.timestamp", user.timestamp, "currentTS", currentTS)
                     return diffTS < 5000
                 })
                 console.log(filterUserByTimestamp)
                 return filterUserByTimestamp
+
             })
         }, 5000)
     }
+
+    // const checkUserTypingTS = () => {
+    //     console.log("aaa")
+    //     // const checkUserTypingTS = 
+    //     setTimeout(() => {
+    //         console.log("bbb")
+    //         setUserIsTyping(prevstate => {
+    //             const currentTS = Date.now()
+    //             const filterUserByTimestamp = prevstate.filter(user => {
+    //                 const diffTS = currentTS - user.timestamp
+    //                 console.log("diffTS", diffTS, "user.timestamp", user.timestamp, "currentTS", currentTS)
+    //                 return diffTS < 5000
+    //             })
+    //             console.log(filterUserByTimestamp)
+    //             return filterUserByTimestamp
+    //         })
+    //     }, 5000)
+    // }
 
     const currentlyTyping = (data) => {
         const userTypingName = data.name
@@ -94,12 +101,13 @@ const ChatRoom = () => {
             const lastTypingTS = Date.now()
             for (let user in prevstate) {
                 if (userTypingId === prevstate[user].user_id) {
+                    console.log("yes")
                     const usersPrevstate = [...prevstate]
                     usersPrevstate[user].timestamp = lastTypingTS
                     return usersPrevstate
                 }
             }
-            console.log({ userTypingName, userTypingId, lastTypingTS })
+            console.log("no")
             return [...prevstate, { name: userTypingName, user_id: userTypingId, timestamp: lastTypingTS }]
         })
     }
@@ -141,7 +149,7 @@ const ChatRoom = () => {
     }
 
 
-    // console.log("userIsTyping", userIsTyping, userIsTyping.length)
+    console.log("userIsTyping", userIsTyping, userIsTyping.length)
     // console.log("timeline", timeline)
 
     return (
