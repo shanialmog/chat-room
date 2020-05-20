@@ -23,7 +23,6 @@ body {
 }
 
 .page-cont {
-    text-align: center;
     height: 100vh;
     display: flex;
     flex-direction: column;
@@ -33,6 +32,7 @@ body {
 }
 
 .header {
+    text-align: center;
     display: flex;
     margin: 10px;
     width: 100%;
