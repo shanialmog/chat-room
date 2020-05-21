@@ -119,7 +119,9 @@ const ChatRoom = () => {
     }
 
     const handleKeyDown = (event) => {
-        if (event.key === 'Enter' && isValidMessage) {
+        console.log(event.key)
+        if (event.keyCode  === 13 && isValidMessage && !event.shiftKey) {
+            event.preventDefault()
             sendMsg()
         }
     }
@@ -204,6 +206,7 @@ const ChatRoom = () => {
                         placeholder="Text here"
                         variant="outlined"
                         fullWidth
+                        multiline
                         onChange={handleChange}
                         onKeyDown={handleKeyDown}
                     />

@@ -2,7 +2,7 @@ import React from 'react'
 
 export default ({ name, type }) => {
     return (
-        <div>
+        <div style={{textAlign: "center"}}>
             {
                 type === "joined"
                 ?
