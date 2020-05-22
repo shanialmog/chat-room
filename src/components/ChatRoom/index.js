@@ -17,6 +17,7 @@ const ChatRoom = () => {
     const [timeline, setTimeline] = useState([])
     const [socket, setSocket] = useState(null)
     const [userIsTyping, setUserIsTyping] = useState([])
+    const [userCount, setUserCount] = useState(null)
 
     const isValidMessage = message.length > 0 && socket != null && socket.connected
 
@@ -33,21 +34,40 @@ const ChatRoom = () => {
         })
         openSocket.on("join", data => {
             setTimeline((prevstate) => { return [...prevstate, { "type": "user_joined", data }] })
+            GetUserCount()
         })
         openSocket.on("left", data => {
             setTimeline((prevstate) => { return [...prevstate, { "type": "user_left", data }] })
             deleteUserTyping(data)
+            GetUserCount()
         })
         openSocket.on("typing", data => {
             currentlyTyping(data)
             // checkUserTypingTS()
             // setUserIsTyping((prevstate) => { return [...prevstate, data.name] })
         })
+        const GetUserCount = async () => {
+            const response = await fetch('/users')
+            const getUsersCount =await  response.json()
+            console.log("getUsersCount",getUsersCount)
+            setUserCount(getUsersCount.count)
+        }
+        GetUserCount()
         setSocket(openSocket)
         return () => {
             openSocket.close()
         }
     }, [])
+
+    // useEffect(() => {
+    //     const GetUserCount = async () => {
+    //         const response = await fetch('/users')
+    //         const getUsersCount =await  response.json()
+    //         console.log("getUsersCount",getUsersCount)
+    //         setUserCount(getUsersCount.count)
+    //     }
+    //     GetUserCount()
+    // }, [])
 
     const deleteUserTyping = (data) => {
         setUserIsTyping(prevstate => {
@@ -120,7 +140,7 @@ const ChatRoom = () => {
     }
 
     const handleKeyDown = (event) => {
-        if (event.keyCode  === 13 && isValidMessage && !event.shiftKey) {
+        if (event.keyCode === 13 && isValidMessage && !event.shiftKey) {
             event.preventDefault()
             sendMsg()
         }
@@ -129,6 +149,7 @@ const ChatRoom = () => {
 
     // console.log("userIsTyping", userIsTyping, userIsTyping.length)
     console.log("timeline", timeline)
+    console.log("users", userCount)
 
     return (
         <div className="page-cont">
@@ -139,7 +160,14 @@ const ChatRoom = () => {
                 />
             }
             <div className="header">
-                <h1>Chat room</h1>
+                {
+                    userCount > 0
+                        ?
+                        <div>Users: {userCount}</div>
+                        :
+                        <div>Users: 0</div>
+                }
+                <h1>Chatroom</h1>
                 <div>
                     {username &&
                         <Button
