@@ -106,20 +106,20 @@ const ChatRoom = () => {
     }
 
     const sendMsg = (event) => {
-        socket.emit("msg", { "message": message })
+        const messageNewLine = message.replace(/[/\r\n|\r|\n/]/g, '\n\n')
+        socket.emit("msg", { "message": messageNewLine })
         // console.log("message",message)
         const t = Date.now()
         const time = Math.floor(t / 1000)
         setTimeline((prevstate) => {
             return ([...prevstate, {
-                "type": "users_message", data: { "message": message, "name": username, "timestamp": time }
+                "type": "users_message", data: { "message": messageNewLine, "name": username, "timestamp": time }
             }])
         })
         setMessage("")
     }
 
     const handleKeyDown = (event) => {
-        console.log(event.key)
         if (event.keyCode  === 13 && isValidMessage && !event.shiftKey) {
             event.preventDefault()
             sendMsg()
@@ -127,7 +127,8 @@ const ChatRoom = () => {
     }
 
 
-    console.log("userIsTyping", userIsTyping, userIsTyping.length)
+    // console.log("userIsTyping", userIsTyping, userIsTyping.length)
+    console.log("timeline", timeline)
 
     return (
         <div className="page-cont">
