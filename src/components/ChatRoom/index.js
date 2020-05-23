@@ -24,6 +24,17 @@ const ChatRoom = () => {
 
     useEffect(() => {
         const openSocket = io.connect()
+        const getUserMessages = async () => {
+            const response = await fetch('/messages')
+            const data = await response.json()
+            console.log("data", data)
+            setTimeline((prevstate) => {
+                for (let i in data) {
+                    return [...prevstate, {"type": "users_message",data : data[i]}]
+                }
+            })
+        }
+        getUserMessages()
         openSocket.on("msg", data => {
             setTimeline((prevstate) => {
                 return (
@@ -48,8 +59,8 @@ const ChatRoom = () => {
         })
         const GetUserCount = async () => {
             const response = await fetch('/users')
-            const getUsersCount =await  response.json()
-            console.log("getUsersCount",getUsersCount)
+            const getUsersCount = await response.json()
+            console.log("getUsersCount", getUsersCount)
             setUserCount(getUsersCount.count)
         }
         GetUserCount()
@@ -59,15 +70,6 @@ const ChatRoom = () => {
         }
     }, [])
 
-    // useEffect(() => {
-    //     const GetUserCount = async () => {
-    //         const response = await fetch('/users')
-    //         const getUsersCount =await  response.json()
-    //         console.log("getUsersCount",getUsersCount)
-    //         setUserCount(getUsersCount.count)
-    //     }
-    //     GetUserCount()
-    // }, [])
 
     const deleteUserTyping = (data) => {
         setUserIsTyping(prevstate => {
@@ -128,11 +130,12 @@ const ChatRoom = () => {
     const sendMsg = (event) => {
         const messageNewLine = message.replace(/[/\r\n|\r|\n/]/g, '\n\n')
         socket.emit("msg", { "message": messageNewLine })
-        // console.log("message",message)
         const t = Date.now()
         const time = Math.floor(t / 1000)
+        console.log("message",messageNewLine, "name", username, "timestamp", time)
         setTimeline((prevstate) => {
-            return ([...prevstate, {
+            return (
+                [...prevstate, {
                 "type": "users_message", data: { "message": messageNewLine, "name": username, "timestamp": time }
             }])
         })
@@ -185,11 +188,12 @@ const ChatRoom = () => {
                     timeline.map((res, i) => {
                         return (
                             <div
-                                className="chat-msg"
-                                key={i}
+                            className="chat-msg"
+                            key={i}
                             >
                                 {
                                     res.type === "users_message" &&
+                                    // console.log(res)
                                     <UserMessage
                                         {...res.data}
                                     />

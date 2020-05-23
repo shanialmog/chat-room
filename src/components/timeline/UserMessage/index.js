@@ -4,9 +4,10 @@ import InputLabel from "@material-ui/core/InputLabel"
 import NotchedOutline from "@material-ui/core/OutlinedInput/NotchedOutline"
 import moment from 'moment'
 
+// export default (props) => {
 export default ({ name, message, timestamp }) => {
     const t = moment.unix(timestamp)
-    const allowedTypes = ['image', 'strong ', 'emphasis ', 'definition ']
+    console.log(name, timestamp, message)
 
     return (
         <div style={{ position: "relative", marginTop: "8px" }}>
@@ -20,7 +21,7 @@ export default ({ name, message, timestamp }) => {
             {/* <div> */}
                 <div style={{padding: "2px 14px"}}>
                     <ReactMarkdown source={message} />
-                    <NotchedOutline colorSecondary notched labelWidth="25" />
+                    <NotchedOutline colorSecondary notched />
                     {/* <NotchedOutline notched /> */}
                 </div>
             {/* </div> */}
