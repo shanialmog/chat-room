@@ -30,7 +30,7 @@ const ChatRoom = () => {
             console.log("data", data)
             setTimeline((prevstate) => {
                 for (let i in data) {
-                    return [...prevstate, {"type": "users_message",data : data[i]}]
+                    return [...prevstate, { "type": "users_message", data: data[i] }]
                 }
             })
         }
@@ -132,12 +132,12 @@ const ChatRoom = () => {
         socket.emit("msg", { "message": messageNewLine })
         const t = Date.now()
         const time = Math.floor(t / 1000)
-        console.log("message",messageNewLine, "name", username, "timestamp", time)
+        console.log("message", messageNewLine, "name", username, "timestamp", time)
         setTimeline((prevstate) => {
             return (
                 [...prevstate, {
-                "type": "users_message", data: { "message": messageNewLine, "name": username, "timestamp": time }
-            }])
+                    "type": "users_message", data: { "message": messageNewLine, "name": username, "timestamp": time }
+                }])
         })
         setMessage("")
     }
@@ -181,15 +181,18 @@ const ChatRoom = () => {
                     }
                 </div>
             </div>
-            <div
-                className="chat-msg-cont"
-            >
+            <div className="chat-msg-cont">
+                <div style={{textAlign: "center"}}>
+                    <Button size="small">
+                        Load earlier messages
+                    </Button>
+                </div>
                 {
                     timeline.map((res, i) => {
                         return (
                             <div
-                            className="chat-msg"
-                            key={i}
+                                className="chat-msg"
+                                key={i}
                             >
                                 {
                                     res.type === "users_message" &&
