@@ -142,6 +142,10 @@ const ChatRoom = () => {
         setMessage("")
     }
 
+    const loadEarlierMessages = () => {
+
+    }
+
     const handleKeyDown = (event) => {
         if (event.keyCode === 13 && isValidMessage && !event.shiftKey) {
             event.preventDefault()
@@ -183,7 +187,10 @@ const ChatRoom = () => {
             </div>
             <div className="chat-msg-cont">
                 <div style={{textAlign: "center"}}>
-                    <Button size="small">
+                    <Button
+                    size="small"
+                    onClick={loadEarlierMessages}
+                    >
                         Load earlier messages
                     </Button>
                 </div>
