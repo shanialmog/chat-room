@@ -26,18 +26,11 @@ const ChatRoom = () => {
         const openSocket = io.connect()
         const getUserMessages = async () => {
             const response = await fetch('/messages')
-            const data = await response.json()
-            console.log("data", data)
-            for (let i in data) {
-                setTimeline((prevstate) => {
-                    return [...prevstate, { "type": "users_message", data: data[i] }]
-                })
-            }
-            // setTimeline((prevstate) => {
-            //     for (let i in data) {
-            //         return [...prevstate, { "type": "users_message", data: data[i] }]
-            //     }
-            // })
+            const fetchedMessages = await response.json()
+            setTimeline(() => {
+                return fetchedMessages.map((timelimeItem) => ({ "type": "users_message", data: timelimeItem })
+                )
+            })
         }
         getUserMessages()
         openSocket.on("msg", data => {
@@ -149,16 +142,16 @@ const ChatRoom = () => {
 
     const loadEarlierMessages = async () => {
         const earliestMessageId = timeline[0].data.id
-        // const getEarliestMessages = async () => {
         const response = await fetch('/messages', { "before_message": earliestMessageId, "size": 20 })
         const earliestMessages = await response.json()
         console.log("earliestMessages", earliestMessages)
-        for (let i in earliestMessages) {
-            setTimeline(prevstate => {
+        setTimeline(prevstate => {
+            earliestMessages.map(timelineItem => {
                 console.log("earliestMessages", earliestMessages)
-                return [{ "type": "users_message", data: earliestMessages[i] }, ...prevstate]
+                return [{ "type": "users_message", data: earliestMessages }, ...prevstate]
+
             })
-        }
+        })
     }
 
 
