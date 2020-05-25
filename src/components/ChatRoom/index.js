@@ -28,11 +28,16 @@ const ChatRoom = () => {
             const response = await fetch('/messages')
             const data = await response.json()
             console.log("data", data)
-            setTimeline((prevstate) => {
-                for (let i in data) {
+            for (let i in data) {
+                setTimeline((prevstate) => {
                     return [...prevstate, { "type": "users_message", data: data[i] }]
-                }
-            })
+                })
+            }
+            // setTimeline((prevstate) => {
+            //     for (let i in data) {
+            //         return [...prevstate, { "type": "users_message", data: data[i] }]
+            //     }
+            // })
         }
         getUserMessages()
         openSocket.on("msg", data => {
@@ -142,9 +147,20 @@ const ChatRoom = () => {
         setMessage("")
     }
 
-    const loadEarlierMessages = () => {
-
+    const loadEarlierMessages = async () => {
+        const earliestMessageId = timeline[0].data.id
+        // const getEarliestMessages = async () => {
+        const response = await fetch('/messages', { "before_message": earliestMessageId, "size": 20 })
+        const earliestMessages = await response.json()
+        console.log("earliestMessages", earliestMessages)
+        for (let i in earliestMessages) {
+            setTimeline(prevstate => {
+                console.log("earliestMessages", earliestMessages)
+                return [{ "type": "users_message", data: earliestMessages[i] }, ...prevstate]
+            })
+        }
     }
+
 
     const handleKeyDown = (event) => {
         if (event.keyCode === 13 && isValidMessage && !event.shiftKey) {
@@ -186,10 +202,10 @@ const ChatRoom = () => {
                 </div>
             </div>
             <div className="chat-msg-cont">
-                <div style={{textAlign: "center"}}>
+                <div style={{ textAlign: "center" }}>
                     <Button
-                    size="small"
-                    onClick={loadEarlierMessages}
+                        size="small"
+                        onClick={loadEarlierMessages}
                     >
                         Load earlier messages
                     </Button>
