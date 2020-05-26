@@ -25,7 +25,7 @@ const ChatRoom = () => {
     useEffect(() => {
         const openSocket = io.connect()
         const getUserMessages = async () => {
-            const response = await fetch('/messages')
+            const response = await fetch('/messages?size=5')
             const fetchedMessages = await response.json()
             setTimeline(() => {
                 return fetchedMessages.map((timelimeItem) => ({ "type": "users_message", data: timelimeItem })
@@ -142,15 +142,16 @@ const ChatRoom = () => {
 
     const loadEarlierMessages = async () => {
         const earliestMessageId = timeline[0].data.id
-        const response = await fetch('/messages', { "before_message": earliestMessageId, "size": 20 })
+        console.log(earliestMessageId,"earliestMessageId")
+        const response = await fetch(`/messages?before_message=${earliestMessageId}&size=10`)
         const earliestMessages = await response.json()
         console.log("earliestMessages", earliestMessages)
-        setTimeline(prevstate => {
-            earliestMessages.map(timelineItem => {
-                console.log("earliestMessages", earliestMessages)
-                return [{ "type": "users_message", data: earliestMessages }, ...prevstate]
-
+        setTimeline((prevstate) => {
+            const timelineMessages = earliestMessages.map(timelineItem => {
+                // console.log("earliestMessages", earliestMessages)
+                return ({ "type": "users_message", data: timelineItem })
             })
+            return ([...timelineMessages, ...prevstate])
         })
     }
 
