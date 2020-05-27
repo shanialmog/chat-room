@@ -18,11 +18,13 @@ const ChatRoom = () => {
     const [socket, setSocket] = useState(null)
     const [userIsTyping, setUserIsTyping] = useState([])
     const [userCount, setUserCount] = useState(null)
+    const [, setForceRender] = useState(0)
 
     const isValidMessage = message.length > 0 && socket != null && socket.connected
 
 
     useEffect(() => {
+        const updateInterval = setInterval(() => setForceRender(prevstate => prevstate + 1), 60000)
         const openSocket = io.connect()
         const getUserMessages = async () => {
             const response = await fetch('/messages?size=5')
@@ -65,6 +67,7 @@ const ChatRoom = () => {
         setSocket(openSocket)
         return () => {
             openSocket.close()
+            clearInterval(updateInterval);
         }
     }, [])
 
@@ -142,7 +145,7 @@ const ChatRoom = () => {
 
     const loadEarlierMessages = async () => {
         const earliestMessageId = timeline[0].data.id
-        console.log(earliestMessageId,"earliestMessageId")
+        console.log(earliestMessageId, "earliestMessageId")
         const response = await fetch(`/messages?before_message=${earliestMessageId}&size=10`)
         const earliestMessages = await response.json()
         console.log("earliestMessages", earliestMessages)
