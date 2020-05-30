@@ -14,6 +14,7 @@ const ChatRoom = () => {
     const [username, setUsername] = useState(null)
     const [openModal, setOpenModal] = useState(true)
     const [message, setMessage] = useState("")
+    const [userId, setUserId] = useState("")
     const [timeline, setTimeline] = useState([])
     const [socket, setSocket] = useState(null)
     const [userIsTyping, setUserIsTyping] = useState([])
@@ -34,6 +35,9 @@ const ChatRoom = () => {
                 )
             })
         }
+        openSocket.on("user_id", userId => {
+            setUserId(userId.user_id)
+        })
         getUserMessages()
         openSocket.on("msg", data => {
             setTimeline((prevstate) => {
@@ -131,15 +135,15 @@ const ChatRoom = () => {
     const sendMsg = (event) => {
         const messageNewLine = message.replace(/[/\r\n|\r|\n/]/g, '\n\n')
         socket.emit("msg", { "message": messageNewLine })
-        const t = Date.now()
-        const time = Math.floor(t / 1000)
-        console.log("message", messageNewLine, "name", username, "timestamp", time)
-        setTimeline((prevstate) => {
-            return (
-                [...prevstate, {
-                    "type": "users_message", data: { "message": messageNewLine, "name": username, "timestamp": time }
-                }])
-        })
+        // const t = Date.now()
+        // const time = Math.floor(t / 1000)
+        // console.log("message", messageNewLine, "name", username, "timestamp", time)
+        // setTimeline((prevstate) => {
+        //     return (
+        //         [...prevstate, {
+        //             "type": "users_message", data: { "message": messageNewLine, "name": username, "timestamp": time }
+        //         }])
+        // })
         setMessage("")
     }
 
@@ -170,6 +174,7 @@ const ChatRoom = () => {
     // console.log("userIsTyping", userIsTyping, userIsTyping.length)
     console.log("timeline", timeline)
     console.log("users", userCount)
+    console.log("user_id", userId)
 
     return (
         <div className="page-cont">
@@ -199,14 +204,17 @@ const ChatRoom = () => {
                 </div>
             </div>
             <div className="chat-msg-cont">
-                <div style={{ textAlign: "center" }}>
-                    <Button
-                        size="small"
-                        onClick={loadEarlierMessages}
-                    >
-                        Load earlier messages
+                {
+                    timeline.length > 0 &&
+                    <div style={{ textAlign: "center" }}>
+                        <Button
+                            size="small"
+                            onClick={loadEarlierMessages}
+                        >
+                            Load earlier messages
                     </Button>
-                </div>
+                    </div>
+                }
                 {
                     timeline.map((res, i) => {
                         return (
@@ -218,6 +226,7 @@ const ChatRoom = () => {
                                     res.type === "users_message" &&
                                     // console.log(res)
                                     <UserMessage
+                                        userId={userId}
                                         {...res.data}
                                     />
                                 }

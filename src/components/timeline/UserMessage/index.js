@@ -2,12 +2,14 @@ import React from 'react'
 import ReactMarkdown from 'react-markdown'
 import InputLabel from "@material-ui/core/InputLabel"
 import NotchedOutline from "@material-ui/core/OutlinedInput/NotchedOutline"
+import IconButton from '@material-ui/core/IconButton'
+import DeleteIcon from '@material-ui/icons/Delete'
 import moment from 'moment'
 
 // export default (props) => {
-export default ({ name, message, timestamp }) => {
+export default ({ name, message, timestamp, user_id, userId }) => {
     const t = moment.unix(timestamp)
-    console.log(name, timestamp, message)
+    console.log("hellooo",name, timestamp, message,timestamp , user_id, userId)
 
     return (
         <div style={{ position: "relative", marginTop: "8px" }}>
@@ -19,11 +21,27 @@ export default ({ name, message, timestamp }) => {
                 {`${name} ${t.fromNow()}`}
             </InputLabel>
             {/* <div> */}
-                <div style={{padding: "2px 14px"}}>
-                    <ReactMarkdown source={message} />
-                    <NotchedOutline colorSecondary notched />
-                    {/* <NotchedOutline notched /> */}
-                </div>
+            <div style={{ padding: "2px 14px" }}>
+                <ReactMarkdown source={message} />
+                <NotchedOutline colorSecondary notched />
+                {
+                    user_id === userId &&
+                    <div>
+                        <IconButton
+                            type="submit"
+                            // onClick={sendMsg}
+                            edge="end"
+                            color="primary"
+                            // disabled={!isValidMessage}
+                            fontSize="small"
+                        >
+                            <DeleteIcon />
+                        </IconButton>
+                    </div>
+                }
+
+                {/* <NotchedOutline notched /> */}
+            </div>
             {/* </div> */}
         </div>
         // <div>
