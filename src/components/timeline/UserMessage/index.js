@@ -7,43 +7,53 @@ import DeleteIcon from '@material-ui/icons/Delete'
 import moment from 'moment'
 
 // export default (props) => {
-export default ({ name, message, timestamp, user_id, userId }) => {
+export default ({ name, message, timestamp, user_id, userId, id, deleteMessage, is_deleted }) => {
     const t = moment.unix(timestamp)
-    console.log("hellooo",name, timestamp, message,timestamp , user_id, userId)
+    // console.log("hellooo", name, timestamp, message, timestamp, user_id, userId, "id", id)
+
+    const handleDeleteMessage = () => {
+        deleteMessage(id)
+    }
 
     return (
-        <div style={{ position: "relative", marginTop: "8px" }}>
-            <InputLabel
-                variant="outlined"
-                // className={classes.inputLabel}
-                shrink
-            >
-                {`${name} ${t.fromNow()}`}
-            </InputLabel>
-            {/* <div> */}
-            <div style={{ padding: "2px 14px" }}>
-                <ReactMarkdown source={message} />
-                <NotchedOutline colorSecondary notched />
-                {
-                    user_id === userId &&
-                    <div>
-                        <IconButton
-                            type="submit"
-                            // onClick={sendMsg}
-                            edge="end"
-                            color="primary"
-                            // disabled={!isValidMessage}
-                            fontSize="small"
-                        >
-                            <DeleteIcon />
-                        </IconButton>
-                    </div>
-                }
+        <div>
+            {
+                !is_deleted &&
+                <div style={{ position: "relative", marginTop: "8px" }}>
+                    <InputLabel
+                        variant="outlined"
+                        // className={classes.inputLabel}
+                        shrink
+                    >
+                        {`${name} ${t.fromNow()}`}
+                    </InputLabel>
+                    {/* <div> */}
+                    <div style={{ padding: "2px 14px" }}>
+                        <ReactMarkdown source={message} />
+                        <NotchedOutline colorSecondary notched />
+                        {
+                            user_id === userId &&
+                            <div>
+                                <IconButton
+                                    type="submit"
+                                    onClick={handleDeleteMessage}
+                                    edge="end"
+                                    color="primary"
+                                    // disabled={!isValidMessage}
+                                    fontSize="small"
+                                >
+                                    <DeleteIcon />
+                                </IconButton>
+                            </div>
+                        }
 
-                {/* <NotchedOutline notched /> */}
-            </div>
-            {/* </div> */}
+                        {/* <NotchedOutline notched /> */}
+                    </div>
+                    {/* </div> */}
+                </div>
+            }
         </div>
+
         // <div>
         /* <div style={{
             // ...titleStyle,
