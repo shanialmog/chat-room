@@ -62,6 +62,21 @@ const ChatRoom = () => {
             // checkUserTypingTS()
             // setUserIsTyping((prevstate) => { return [...prevstate, data.name] })
         })
+        openSocket.on("delete_msg", deleted_id => {
+            setTimeline(prevstate => {
+                for (let i in prevstate) {
+                    console.log(deleted_id)
+                    console.log(prevstate)
+                    if (prevstate[i].data.id === deleted_id.id) {
+                        console.log(prevstate[i].data.id)
+                        const updatedTimeline = [...prevstate]
+                        updatedTimeline[i].data.is_deleted = true
+                        updatedTimeline[i].data.message = null
+                        return updatedTimeline
+                    }
+                }
+            })
+        })
         const GetUserCount = async () => {
             const response = await fetch('/users')
             const getUsersCount = await response.json()
@@ -173,9 +188,21 @@ const ChatRoom = () => {
 
     const deleteMessage = (message_id) => {
         socket.emit("delete_msg", { "id": message_id })
+        setTimeline(prevstate => {
+            for (let i in prevstate) {
+                console.log(i)
+                if (prevstate[i].data.id === message_id) {
+                    console.log(prevstate[i].data.id)
+                    const updatedTimeline = [...prevstate]
+                    updatedTimeline[i].data.is_deleted = true
+                    updatedTimeline[i].data.message = null
+                    return updatedTimeline
+                }
+            }
+        })
         // setTimeline(prevstate => {
         //     console.log(message_id)
-        //     const delMessageFromTimeline = prevstate.filter(message =>
+        //     const delMessageFromTimeline = prevstate.map(message =>
         //         message_id != message.data.id
         //         // !message.data.is_deleted && message_id !== message.data.id
         //         // console.log("message",message.data.id)
