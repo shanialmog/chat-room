@@ -20,7 +20,7 @@ const ChatRoom = () => {
     const [userIsTyping, setUserIsTyping] = useState([])
     const [userCount, setUserCount] = useState(null)
     const [, setForceRender] = useState(0)
-    const [messageToDelete, setMessageToDelete] = useState(null)
+    // const [messageToDelete, setMessageToDelete] = useState(null)
 
     const isValidMessage = message.length > 0 && socket != null && socket.connected
 
@@ -173,20 +173,20 @@ const ChatRoom = () => {
 
     const deleteMessage = (message_id) => {
         socket.emit("delete_msg", { "id": message_id })
-        setTimeline(prevstate => {
-            console.log(message_id)
-            const delMessageFromTimeline = prevstate.filter(message =>
-                message_id != message.data.id
-                // !message.data.is_deleted && message_id != message.data.id
-                // console.log("message",message.data.id)
-            )
-            return delMessageFromTimeline
-        })
+        // setTimeline(prevstate => {
+        //     console.log(message_id)
+        //     const delMessageFromTimeline = prevstate.filter(message =>
+        //         message_id != message.data.id
+        //         // !message.data.is_deleted && message_id !== message.data.id
+        //         // console.log("message",message.data.id)
+        //     )
+        //     return delMessageFromTimeline
+        // })
         console.log("deleted?")
     }
 
 
-    // console.log("timeline", timeline)
+    console.log("timeline", timeline)
     // console.log("users", userCount)
     // console.log("user_id", userId)
 

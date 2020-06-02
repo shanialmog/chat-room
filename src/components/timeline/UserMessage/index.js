@@ -17,8 +17,8 @@ export default ({ name, message, timestamp, user_id, userId, id, deleteMessage, 
 
     return (
         <div>
-            {
-                !is_deleted &&
+            {/* {
+                !is_deleted && */}
                 <div style={{ position: "relative", marginTop: "8px" }}>
                     <InputLabel
                         variant="outlined"
@@ -29,7 +29,13 @@ export default ({ name, message, timestamp, user_id, userId, id, deleteMessage, 
                     </InputLabel>
                     {/* <div> */}
                     <div style={{ padding: "2px 14px" }}>
-                        <ReactMarkdown source={message} />
+                        {
+                            is_deleted
+                                ?
+                                <ReactMarkdown source='*message was deleted*' />
+                                :
+                                <ReactMarkdown source={message} />
+                        }
                         <NotchedOutline colorSecondary notched />
                         {
                             user_id === userId &&
@@ -51,7 +57,7 @@ export default ({ name, message, timestamp, user_id, userId, id, deleteMessage, 
                     </div>
                     {/* </div> */}
                 </div>
-            }
+            {/* } */}
         </div>
 
         // <div>
