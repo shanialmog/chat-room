@@ -9,6 +9,7 @@ import IconButton from '@material-ui/core/IconButton'
 import SendRoundedIcon from '@material-ui/icons/SendRounded'
 import Button from '@material-ui/core/Button'
 import Notifications from '../timeline/Notifications'
+import Alert from '@material-ui/lab/Alert'
 
 const ChatRoom = () => {
     const [username, setUsername] = useState(null)
@@ -23,18 +24,26 @@ const ChatRoom = () => {
     const [isFetching, setIsFetching] = useState(false)
 
     const isValidMessage = message.length > 0 && socket != null && socket.connected
+    const isSocketConnected = socket != null && socket.connected
     // const isValidMessage = message.length > 0
+    const messagesEndRef = useRef(null)
+
+    const scrollToBottom = () => {
+        console.log("scrolling")
+        messagesEndRef.current.scrollIntoView({ behavior: "smooth" })
+    }
 
     useEffect(() => {
         const updateInterval = setInterval(() => setForceRender(prevstate => prevstate + 1), 60000)
         const openSocket = io.connect()
         const getUserMessages = async () => {
-            const response = await fetch('/messages?size=5')
+            const response = await fetch('/messages?size=10')
             const fetchedMessages = await response.json()
             setTimeline(() => {
                 return fetchedMessages.map((timelimeItem) => ({ "type": "users_message", data: timelimeItem })
                 )
             })
+            scrollToBottom()
         }
         openSocket.on("user_id", userId => {
             setUserId(userId.user_id)
@@ -99,11 +108,11 @@ const ChatRoom = () => {
         loadEarlierMessages()
         console.log('Fetch earlier messages!')
     }, [isFetching])
-    
+
     const handleScroll = (e) => {
         console.log(e)
         console.log(e.target.scrollTop)
-        if (e.target.scrollTop === 0) {
+        if (e.target.scrollTop <= 0) {
             console.log('Fetching!!')
             setIsFetching(true)
         }
@@ -155,11 +164,11 @@ const ChatRoom = () => {
         setUsername(username)
     }
 
-    const messagesEndRef = useRef(null)
+    // const messagesEndRef = useRef(null)
 
-    useEffect(() => {
-        messagesEndRef.current.scrollIntoView({ behavior: "smooth" })
-    }, [timeline]);
+    // useEffect(() => {
+    //     messagesEndRef.current.scrollIntoView({ behavior: "smooth" })
+    // }, [timeline]);
 
     const handleChange = (event) => {
         setMessage(event.target.value)
@@ -167,7 +176,7 @@ const ChatRoom = () => {
     }
 
     const sendMsg = (event) => {
-        const messageNewLine = message.replace(/[/\r\n|\r|\n/]/g, '\n\n')
+        const messageNewLine = message.replace(/(^|[^\n])\n(?!\n)/g, '\n\n')
         socket.emit("msg", { "message": messageNewLine })
         // const t = Date.now()
         // const time = Math.floor(t / 1000)
@@ -233,13 +242,13 @@ const ChatRoom = () => {
     }
 
 
-    console.log("timeline", timeline)
+    // console.log("timeline", timeline)
     // console.log("users", userCount)
     // console.log("user_id", userId)
 
     return (
         <div className="page-cont">
-            {socket &&
+            {isSocketConnected &&
                 <UserName
                     setName={setName}
                     openModal={openModal}
@@ -264,66 +273,74 @@ const ChatRoom = () => {
                     }
                 </div>
             </div>
-            <div className="chat-msg-cont" onScroll={handleScroll}>
-                {
-                    timeline.length > 0 &&
-                    <div style={{ textAlign: "center" }}>
-                        <Button
-                            size="small"
-                            onClick={loadEarlierMessages}
-                        >
-                            Load earlier messages
+            {
+                isSocketConnected
+                    ?
+                    <div className="chat-msg-cont" onScroll={handleScroll}>
+                        {
+                            timeline.length > 0 &&
+                            <div style={{ textAlign: "center" }}>
+                                <Button
+                                    size="small"
+                                    onClick={loadEarlierMessages}
+                                >
+                                    Load earlier messages
                     </Button>
-                    </div>
-                }
-                {
-                    timeline.map((res, i) => {
-                        return (
-                            <div
-                                className="chat-msg"
-                                key={i}
-                            >
-                                {
-                                    res.type === "users_message" &&
-                                    // console.log(res)
-                                    <UserMessage
-                                        userId={userId}
-                                        {...res.data}
-                                        deleteMessage={deleteMessage}
-                                    />
-                                }
-                                {
-                                    res.type === "user_joined" &&
-                                    <Notifications
-                                        {...res.data}
-                                        type="joined"
-                                    />
-                                }
-                                {
-                                    res.type === "user_left" &&
-                                    <Notifications
-                                        {...res.data}
-                                        type="left"
-                                    />
-                                }
                             </div>
-                        )
-                    })
-                }
-                {
-                    userIsTyping.length === 1 &&
-                    <div className="typing-indicator">{userIsTyping[0].name} is typing...</div>
-                }
-                {
-                    userIsTyping.length === 2 &&
-                    <div className="typing-indicator">{userIsTyping[0].name},{userIsTyping[1].name} are typing...</div>
-                }
-                {
-                    userIsTyping.length > 2 &&
-                    <div className="typing-indicator">{userIsTyping.length} users are typing...</div>
-                }
-                <div ref={messagesEndRef}></div>
-            </div>
+                        }
+                        {
+                            timeline.map((res, i) => {
+                                return (
+                                    <div
+                                        className="chat-msg"
+                                        key={i}
+                                    >
+                                        {
+                                            res.type === "users_message" &&
+                                            // console.log(res)
+                                            <UserMessage
+                                                userId={userId}
+                                                {...res.data}
+                                                deleteMessage={deleteMessage}
+                                            />
+                                        }
+                                        {
+                                            res.type === "user_joined" &&
+                                            <Notifications
+                                                {...res.data}
+                                                type="joined"
+                                            />
+                                        }
+                                        {
+                                            res.type === "user_left" &&
+                                            <Notifications
+                                                {...res.data}
+                                                type="left"
+                                            />
+                                        }
+                                    </div>
+                                )
+                            })
+                        }
+                        {
+                            userIsTyping.length === 1 &&
+                            <div className="typing-indicator">{userIsTyping[0].name} is typing...</div>
+                        }
+                        {
+                            userIsTyping.length === 2 &&
+                            <div className="typing-indicator">{userIsTyping[0].name},{userIsTyping[1].name} are typing...</div>
+                        }
+                        {
+                            userIsTyping.length > 2 &&
+                            <div className="typing-indicator">{userIsTyping.length} users are typing...</div>
+                        }
+                        <div ref={messagesEndRef}></div>
+                    </div>
+                    :
+                    <Alert variant="filled" severity="error">
+                        <div>Can't connect to chatroom, please try again later</div>
+                    </Alert>
+            }
             <div className="user-msgbox">
                 <div className="user-msg">
                     <TextField
