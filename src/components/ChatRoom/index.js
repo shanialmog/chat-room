@@ -20,10 +20,10 @@ const ChatRoom = () => {
     const [userIsTyping, setUserIsTyping] = useState([])
     const [userCount, setUserCount] = useState(null)
     const [, setForceRender] = useState(0)
-    // const [messageToDelete, setMessageToDelete] = useState(null)
+    const [isFetching, setIsFetching] = useState(false)
 
     const isValidMessage = message.length > 0 && socket != null && socket.connected
-
+    // const isValidMessage = message.length > 0
 
     useEffect(() => {
         const updateInterval = setInterval(() => setForceRender(prevstate => prevstate + 1), 60000)
@@ -77,6 +77,8 @@ const ChatRoom = () => {
                 }
             })
         })
+        // window.addEventListener('scroll', handleScroll)
+        // window.addEventListener('scroll', e => {console.log(e)})
         const GetUserCount = async () => {
             const response = await fetch('/users')
             const getUsersCount = await response.json()
@@ -87,9 +89,25 @@ const ChatRoom = () => {
         setSocket(openSocket)
         return () => {
             openSocket.close()
-            clearInterval(updateInterval);
+            clearInterval(updateInterval)
+            window.removeEventListener('scroll', handleScroll)
         }
     }, [])
+
+    useEffect(() => {
+        if (!isFetching) return
+        loadEarlierMessages()
+        console.log('Fetch earlier messages!')
+    }, [isFetching])
+    
+    const handleScroll = (e) => {
+        console.log(e)
+        console.log(e.target.scrollTop)
+        if (e.target.scrollTop === 0) {
+            console.log('Fetching!!')
+            setIsFetching(true)
+        }
+    }
 
 
     const deleteUserTyping = (data) => {
@@ -164,6 +182,7 @@ const ChatRoom = () => {
     }
 
     const loadEarlierMessages = async () => {
+        console.log("done fetching!")
         const earliestMessageId = timeline[0].data.id
         console.log(earliestMessageId, "earliestMessageId")
         const response = await fetch(`/messages?before_message=${earliestMessageId}&size=10`)
@@ -176,6 +195,7 @@ const ChatRoom = () => {
             })
             return ([...timelineMessages, ...prevstate])
         })
+        setIsFetching(false)
     }
 
 
@@ -244,7 +264,7 @@ const ChatRoom = () => {
                     }
                 </div>
             </div>
-            <div className="chat-msg-cont">
+            <div className="chat-msg-cont" onScroll={handleScroll}>
                 {
                     timeline.length > 0 &&
                     <div style={{ textAlign: "center" }}>
