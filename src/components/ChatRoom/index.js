@@ -56,6 +56,7 @@ const ChatRoom = () => {
                 )
             })
             deleteUserTyping(data)
+            scrollToBottom()
         })
         openSocket.on("join", data => {
             setTimeline((prevstate) => { return [...prevstate, { "type": "user_joined", data }] })
@@ -68,8 +69,6 @@ const ChatRoom = () => {
         })
         openSocket.on("typing", data => {
             currentlyTyping(data)
-            // checkUserTypingTS()
-            // setUserIsTyping((prevstate) => { return [...prevstate, data.name] })
         })
         openSocket.on("delete_msg", deleted_id => {
             setTimeline(prevstate => {
@@ -106,7 +105,6 @@ const ChatRoom = () => {
     useEffect(() => {
         if (!isFetching) return
         loadEarlierMessages()
-        console.log('Fetch earlier messages!')
     }, [isFetching])
 
     const handleScroll = (e) => {
@@ -118,7 +116,6 @@ const ChatRoom = () => {
         }
     }
 
-
     const deleteUserTyping = (data) => {
         setUserIsTyping(prevstate => {
             const deleteUser = prevstate.filter(user => data.name !== user.name)
@@ -126,7 +123,6 @@ const ChatRoom = () => {
         }
         )
     }
-
     const checkUserTypingTS = (userTyping) => {
         setTimeout(() => {
             setUserIsTyping(prevstate => {
@@ -163,12 +159,6 @@ const ChatRoom = () => {
         socket.emit("set_name", { "name": username })
         setUsername(username)
     }
-
-    // const messagesEndRef = useRef(null)
-
-    // useEffect(() => {
-    //     messagesEndRef.current.scrollIntoView({ behavior: "smooth" })
-    // }, [timeline]);
 
     const handleChange = (event) => {
         setMessage(event.target.value)
@@ -229,22 +219,8 @@ const ChatRoom = () => {
                 }
             }
         })
-        // setTimeline(prevstate => {
-        //     console.log(message_id)
-        //     const delMessageFromTimeline = prevstate.map(message =>
-        //         message_id != message.data.id
-        //         // !message.data.is_deleted && message_id !== message.data.id
-        //         // console.log("message",message.data.id)
-        //     )
-        //     return delMessageFromTimeline
-        // })
         console.log("deleted?")
     }
-
-
-    // console.log("timeline", timeline)
-    // console.log("users", userCount)
-    // console.log("user_id", userId)
 
     return (
         <div className="page-cont">

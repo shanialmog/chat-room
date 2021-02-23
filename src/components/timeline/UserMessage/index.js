@@ -6,11 +6,8 @@ import IconButton from '@material-ui/core/IconButton'
 import DeleteIcon from '@material-ui/icons/Delete'
 import moment from 'moment'
 
-// export default (props) => {
 export default ({ name, message, timestamp, user_id, userId, id, deleteMessage, is_deleted }) => {
     const t = moment.unix(timestamp)
-    // console.log("hellooo", name, timestamp, message, timestamp, user_id, userId, "id", id)
-
     const handleDeleteMessage = () => {
         deleteMessage(id)
     }
@@ -20,7 +17,7 @@ export default ({ name, message, timestamp, user_id, userId, id, deleteMessage, 
             {/* {
                 !is_deleted && */}
                 <div style={{ position: "relative", marginTop: "8px" }}>
-                    <InputLabel
+                    <InputLabel style={{ zIndex: "3", position: "relative" }}
                         variant="outlined"
                         // className={classes.inputLabel}
                         shrink
