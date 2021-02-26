@@ -27,6 +27,7 @@ const ChatRoom = () => {
     const isSocketConnected = socket != null && socket.connected
     // const isValidMessage = message.length > 0
     const messagesEndRef = useRef(null)
+    console.log(userIsTyping, "userIsTyping")
 
     const scrollToBottom = () => {
         console.log("scrolling")
