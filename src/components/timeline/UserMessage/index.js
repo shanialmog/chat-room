@@ -1,7 +1,7 @@
 import React from 'react'
 import ReactMarkdown from 'react-markdown'
 import InputLabel from "@material-ui/core/InputLabel"
-import NotchedOutline from "@material-ui/core/OutlinedInput/NotchedOutline"
+// import NotchedOutline from "@material-ui/core/OutlinedInput/NotchedOutline"
 import IconButton from '@material-ui/core/IconButton'
 import DeleteIcon from '@material-ui/icons/Delete'
 import moment from 'moment'
@@ -12,80 +12,61 @@ export default ({ name, message, timestamp, user_id, userId, id, deleteMessage, 
         deleteMessage(id)
     }
 
+    const isSameUser = user_id === userId ? true : false
+
+    const styles = {
+        alignSelf: isSameUser ? "flex-end" : "flex-start",
+        // position: "relative",
+        // flexDirection: "column",
+        marginTop: "8px",
+        borderRadius: "10px",
+        backgroundColor: "#417b8c",
+        width: "50%",
+        padding: "0.5em 1em",
+        color: "#fff"
+    }
+
+    const styles2 = {
+        display: "flex",
+        justifyContent: "space-between",
+        // display: "flex",
+        // flexDirection: "column",
+    }
+
     return (
-        <div>
-            {/* {
-                !is_deleted && */}
-                <div style={{ position: "relative", marginTop: "8px" }}>
-                    <InputLabel style={{ zIndex: "3", position: "relative" }}
-                        variant="outlined"
-                        // className={classes.inputLabel}
-                        shrink
-                    >
-                        {`${name} ${t.fromNow()}`}
-                    </InputLabel>
-                    {/* <div> */}
-                    <div style={{ padding: "2px 14px" }}>
-                        {
-                            is_deleted
-                                ?
-                                <ReactMarkdown source='*message was deleted*' />
-                                :
-                                <ReactMarkdown source={message} />
-                        }
-                        <NotchedOutline colorSecondary notched />
-                        {
-                            user_id === userId &&
-                            <div>
-                                <IconButton
-                                    type="submit"
-                                    onClick={handleDeleteMessage}
-                                    edge="end"
-                                    color="primary"
-                                    // disabled={!isValidMessage}
-                                    fontSize="small"
-                                >
-                                    <DeleteIcon />
-                                </IconButton>
-                            </div>
-                        }
-
-                        {/* <NotchedOutline notched /> */}
+        <div style={styles}>
+            <InputLabel style={{ zIndex: "3", color: "#fff", position: "relative" }}
+                variant="outlined"
+                shrink
+            >
+                {`${name} ${t.fromNow()}`}
+            </InputLabel>
+            <div style={styles2}>
+                {
+                    is_deleted
+                        ?
+                        <ReactMarkdown source='*message was deleted*' />
+                        :
+                        <div style={{ overflow: "hidden" }}>
+                            <ReactMarkdown source={message} />
+                        </div>
+                }
+                {
+                    isSameUser &&
+                    <div style={{ alignSelf: "flex-end" }}>
+                        <IconButton
+                            type="submit"
+                            onClick={handleDeleteMessage}
+                            edge="end"
+                            // color="white"
+                            // disabled={!isValidMessage}
+                            fontSize="small"
+                        >
+                            <DeleteIcon />
+                        </IconButton>
                     </div>
-                    {/* </div> */}
-                </div>
-            {/* } */}
+                }
+            </div>
         </div>
-
-        // <div>
-        /* <div style={{
-            // ...titleStyle,
-            transform: 'translate(-43px, -11px) scale(0.75)',
-            fontSize: '17px',
-            color: 'rgba(0, 0, 0, 0.54)',
-            position: 'absolute',
-        }}
-        >
-            {`${name} ${t.fromNow()}`}
-        </div>
-        <div
-            // className="flex-row"
-            style={{
-                border: '1px solid rgba(0, 0, 0, 0.23)',
-                padding: '5px 14px',
-                borderRadius: '4px',
-            }}
-        >
-            <ReactMarkdown source={message} />
-        </div> */
-        /* </div> */
-
-
-        // <TextField
-        //     label={`${name} ${t.fromNow()}`}
-        //     value={message}
-        //     variant="outlined"
-        //     fullWidth
-        // />
     )
 }

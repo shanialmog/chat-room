@@ -25,12 +25,9 @@ const ChatRoom = () => {
 
     const isValidMessage = message.length > 0 && socket != null && socket.connected
     const isSocketConnected = socket != null && socket.connected
-    // const isValidMessage = message.length > 0
     const messagesEndRef = useRef(null)
-    console.log(userIsTyping, "userIsTyping")
 
     const scrollToBottom = () => {
-        console.log("scrolling")
         messagesEndRef.current.scrollIntoView({ behavior: "smooth" })
     }
 
@@ -74,10 +71,7 @@ const ChatRoom = () => {
         openSocket.on("delete_msg", deleted_id => {
             setTimeline(prevstate => {
                 for (let i in prevstate) {
-                    console.log(deleted_id)
-                    console.log(prevstate)
                     if (prevstate[i].data.id === deleted_id.id) {
-                        console.log(prevstate[i].data.id)
                         const updatedTimeline = [...prevstate]
                         updatedTimeline[i].data.is_deleted = true
                         updatedTimeline[i].data.message = null
@@ -86,12 +80,9 @@ const ChatRoom = () => {
                 }
             })
         })
-        // window.addEventListener('scroll', handleScroll)
-        // window.addEventListener('scroll', e => {console.log(e)})
         const GetUserCount = async () => {
             const response = await fetch('/users')
             const getUsersCount = await response.json()
-            console.log("getUsersCount", getUsersCount)
             setUserCount(getUsersCount.count)
         }
         GetUserCount()
@@ -101,18 +92,17 @@ const ChatRoom = () => {
             clearInterval(updateInterval)
             window.removeEventListener('scroll', handleScroll)
         }
+        // eslint-disable-next-line
     }, [])
 
     useEffect(() => {
         if (!isFetching) return
         loadEarlierMessages()
+        // eslint-disable-next-line
     }, [isFetching])
 
     const handleScroll = (e) => {
-        console.log(e)
-        console.log(e.target.scrollTop)
         if (e.target.scrollTop <= 0) {
-            console.log('Fetching!!')
             setIsFetching(true)
         }
     }
@@ -169,28 +159,15 @@ const ChatRoom = () => {
     const sendMsg = (event) => {
         const messageNewLine = message.replace(/(^|[^\n])\n(?!\n)/g, '\n\n')
         socket.emit("msg", { "message": messageNewLine })
-        // const t = Date.now()
-        // const time = Math.floor(t / 1000)
-        // console.log("message", messageNewLine, "name", username, "timestamp", time)
-        // setTimeline((prevstate) => {
-        //     return (
-        //         [...prevstate, {
-        //             "type": "users_message", data: { "message": messageNewLine, "name": username, "timestamp": time }
-        //         }])
-        // })
         setMessage("")
     }
 
     const loadEarlierMessages = async () => {
-        console.log("done fetching!")
         const earliestMessageId = timeline[0].data.id
-        console.log(earliestMessageId, "earliestMessageId")
         const response = await fetch(`/messages?before_message=${earliestMessageId}&size=10`)
         const earliestMessages = await response.json()
-        console.log("earliestMessages", earliestMessages)
         setTimeline((prevstate) => {
             const timelineMessages = earliestMessages.map(timelineItem => {
-                // console.log("earliestMessages", earliestMessages)
                 return ({ "type": "users_message", data: timelineItem })
             })
             return ([...timelineMessages, ...prevstate])
@@ -210,9 +187,7 @@ const ChatRoom = () => {
         socket.emit("delete_msg", { "id": message_id })
         setTimeline(prevstate => {
             for (let i in prevstate) {
-                console.log(i)
                 if (prevstate[i].data.id === message_id) {
-                    console.log(prevstate[i].data.id)
                     const updatedTimeline = [...prevstate]
                     updatedTimeline[i].data.is_deleted = true
                     updatedTimeline[i].data.message = null
@@ -220,7 +195,6 @@ const ChatRoom = () => {
                 }
             }
         })
-        console.log("deleted?")
     }
 
     return (
@@ -262,7 +236,7 @@ const ChatRoom = () => {
                                     onClick={loadEarlierMessages}
                                 >
                                     Load earlier messages
-                    </Button>
+                                </Button>
                             </div>
                         }
                         {
@@ -274,7 +248,6 @@ const ChatRoom = () => {
                                     >
                                         {
                                             res.type === "users_message" &&
-                                            // console.log(res)
                                             <UserMessage
                                                 userId={userId}
                                                 {...res.data}
@@ -332,7 +305,6 @@ const ChatRoom = () => {
                         onKeyDown={handleKeyDown}
                     />
                     <div>
-                        {/* {socket && */}
                         <IconButton
                             type="submit"
                             onClick={sendMsg}

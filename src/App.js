@@ -1,7 +1,5 @@
 import React from 'react'
-
 import ChatRoom from './components/ChatRoom'
-
 import CssBaseline from '@material-ui/core/CssBaseline'
 
 const App = () => {
