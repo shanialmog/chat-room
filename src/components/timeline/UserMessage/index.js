@@ -1,7 +1,6 @@
 import React from 'react'
 import ReactMarkdown from 'react-markdown'
 import InputLabel from "@material-ui/core/InputLabel"
-// import NotchedOutline from "@material-ui/core/OutlinedInput/NotchedOutline"
 import IconButton from '@material-ui/core/IconButton'
 import DeleteIcon from '@material-ui/icons/Delete'
 import moment from 'moment'
@@ -16,8 +15,6 @@ export default ({ name, message, timestamp, user_id, userId, id, deleteMessage, 
 
     const styles = {
         alignSelf: isSameUser ? "flex-end" : "flex-start",
-        // position: "relative",
-        // flexDirection: "column",
         marginTop: "8px",
         borderRadius: "10px",
         backgroundColor: "#417b8c",
@@ -29,8 +26,6 @@ export default ({ name, message, timestamp, user_id, userId, id, deleteMessage, 
     const styles2 = {
         display: "flex",
         justifyContent: "space-between",
-        // display: "flex",
-        // flexDirection: "column",
     }
 
     return (
@@ -58,8 +53,6 @@ export default ({ name, message, timestamp, user_id, userId, id, deleteMessage, 
                             type="submit"
                             onClick={handleDeleteMessage}
                             edge="end"
-                            // color="white"
-                            // disabled={!isValidMessage}
                             fontSize="small"
                         >
                             <DeleteIcon />

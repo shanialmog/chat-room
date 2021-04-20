@@ -191,6 +191,7 @@ const ChatRoom = () => {
                     const updatedTimeline = [...prevstate]
                     updatedTimeline[i].data.is_deleted = true
                     updatedTimeline[i].data.message = null
+                    // ???
                     return updatedTimeline
                 }
             }
@@ -199,6 +200,7 @@ const ChatRoom = () => {
 
     return (
         <div className="page-cont">
+            {console.log(timeline)}
             {isSocketConnected &&
                 <UserName
                     setName={setName}
