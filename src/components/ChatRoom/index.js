@@ -13,7 +13,6 @@ import Alert from '@material-ui/lab/Alert'
 
 const ChatRoom = () => {
     const [username, setUsername] = useState(null)
-    const [openModal, setOpenModal] = useState(true)
     const [message, setMessage] = useState("")
     const [userId, setUserId] = useState("")
     const [timeline, setTimeline] = useState([])
@@ -22,6 +21,7 @@ const ChatRoom = () => {
     const [userCount, setUserCount] = useState(null)
     const [, setForceRender] = useState(0)
     const [isFetching, setIsFetching] = useState(false)
+    const [openModal, setOpenModal] = useState(true)
 
     const isValidMessage = message.length > 0 && socket != null && socket.connected
     const isSocketConnected = socket != null && socket.connected
@@ -191,7 +191,6 @@ const ChatRoom = () => {
                     const updatedTimeline = [...prevstate]
                     updatedTimeline[i].data.is_deleted = true
                     updatedTimeline[i].data.message = null
-                    // ???
                     return updatedTimeline
                 }
             }
@@ -200,7 +199,6 @@ const ChatRoom = () => {
 
     return (
         <div className="page-cont">
-            {console.log(timeline)}
             {isSocketConnected &&
                 <UserName
                     setName={setName}

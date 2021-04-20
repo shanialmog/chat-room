@@ -17,7 +17,7 @@ export default ({ name, message, timestamp, user_id, userId, id, deleteMessage, 
         alignSelf: isSameUser ? "flex-end" : "flex-start",
         marginTop: "8px",
         borderRadius: "10px",
-        backgroundColor: "#417b8c",
+        backgroundColor: isSameUser ? '#418c77' : "#417b8c",
         width: "50%",
         padding: "0.5em 1em",
         color: "#fff"
@@ -47,7 +47,7 @@ export default ({ name, message, timestamp, user_id, userId, id, deleteMessage, 
                         </div>
                 }
                 {
-                    isSameUser &&
+                    (isSameUser && !is_deleted) &&
                     <div style={{ alignSelf: "flex-end" }}>
                         <IconButton
                             type="submit"

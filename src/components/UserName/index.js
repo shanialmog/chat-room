@@ -32,7 +32,6 @@ const UserName = (props) => {
             <Modal
                 className="modal"
                 open={props.openModal}
-                // onClose={handleChangeName}
                 closeAfterTransition
                 BackdropComponent={Backdrop}
                 disableBackdropClick
@@ -46,8 +45,6 @@ const UserName = (props) => {
                         <div className="modal-input">
                             <TextField
                                 label="username"
-                                // defaultValue="Select username"
-                                // helperText="Some important text"
                                 variant="outlined"
                                 onChange={handleChange}
                                 onKeyDown={handleKeyDown}
